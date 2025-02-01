@@ -1,0 +1,29 @@
+---
+title: "TP1"
+author: "GroupeB"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r library, include=FALSE}
+library("tidyverse")
+```
+
+
+```{r importation-du-dataset}
+df<- read.csv("./base_de_donnee.csv")
+head(df)
+```
+
+
+
+
+```{r les-variables}
+colnames(df)
+```
+
+Le jeu de donnees a **`r ncol(df)`** variables et **`r nrow(df)`**
+
+```{r types-des-variables}
+glimpse(df)
+```
