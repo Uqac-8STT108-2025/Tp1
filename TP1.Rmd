@@ -5,13 +5,41 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
+## Méthodologie : 
+
+1. A propos des donnees
+
+  1.1 importation et source des données (À propos de l'auteur) ;
+  
+  1.1 Description des variables ;
+  
+  1.2 calcul des statistiques 
+  
+  1.3 gestion des valeurs manquantes ;
+  
+  
+2. Visualisations : 
+
+ 
+  2.1 Les histogrammes pour les variables catégorielles ;
+  
+  2.2 Les diagrammes en boites pour les variables numériques ;
+  
+  2.3 gestion des valeurs abérantes ;
+  
+  
+3. Regression logistique
+
+
+  
+
 ```{r library, include=FALSE}
 library("tidyverse")
 ```
 
 
 ```{r importation-du-dataset}
-df<- read.csv("./base_de_donnee.csv")
+df<- read.csv("../base_de_donnee.csv")
 head(df)
 ```
 

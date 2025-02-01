@@ -11,7 +11,7 @@
 
 <meta name="author" content="GroupeB" />
 
-<meta name="date" content="2025-01-28" />
+<meta name="date" content="2025-02-01" />
 
 <title>TP1</title>
 
@@ -352,12 +352,30 @@ display: none;
 
 <h1 class="title toc-ignore">TP1</h1>
 <h4 class="author">GroupeB</h4>
-<h4 class="date">2025-01-28</h4>
+<h4 class="date">2025-02-01</h4>
 
 </div>
 
 
-<pre class="r"><code>df&lt;- read.csv(&quot;./base_de_donnee.csv&quot;)
+<div id="méthodologie" class="section level2">
+<h2>Méthodologie :</h2>
+<ol style="list-style-type: decimal">
+<li>A propos des donnees</li>
+</ol>
+<p>1.1 importation et source des données (À propos de l’auteur) ;</p>
+<p>1.1 Description des variables ;</p>
+<p>1.2 calcul des statistiques</p>
+<p>1.3 gestion des valeurs manquantes ;</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Visualisations :</li>
+</ol>
+<p>2.1 Les histogrammes pour les variables catégorielles ;</p>
+<p>2.2 Les diagrammes en boites pour les variables numériques ;</p>
+<p>2.3 gestion des valeurs abérantes ;</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Regression logistique</li>
+</ol>
+<pre class="r"><code>df&lt;- read.csv(&quot;../base_de_donnee.csv&quot;)
 head(df)</code></pre>
 <pre><code>##             Id OrgId IncidentId AlertId                Timestamp DetectorId
 ## 1 1.245541e+12   657      11767   87199 2024-06-04T22:56:27.000Z        524
@@ -490,6 +508,7 @@ head(df)</code></pre>
 ## $ State              &lt;int&gt; 1445, 1445, 1445, 1445, 1445, 1445, 1445, 1445, 144…
 ## $ City               &lt;int&gt; 10630, 10630, 10630, 10630, 10630, 10630, 10630, 10…
 ## $ Usage              &lt;chr&gt; &quot;Private&quot;, &quot;Public&quot;, &quot;Public&quot;, &quot;Public&quot;, &quot;Public&quot;, …</code></pre>
+</div>
 
 
 
