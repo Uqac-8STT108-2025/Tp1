@@ -39,19 +39,48 @@ library("tidyverse")
 
 
 ```{r importation-du-dataset}
-df<- read.csv("../base_de_donnee.csv")
+df<- read.csv("data/GUIDE_Train.csv")
 head(df)
+```
+Afin de faciliter notre manipulation des données nous allons procéder à une reduction de la taille de l'échantillon
+d'entrainement. Nous travaillerons sur un échantillon dont la taille sera 10% de celle de l'original.
+```{r reduction de la taille}
+library(dplyr)
+set.seed(42)
+df_sample_10 <- df %>% sample_frac(0.1)  # Prend 10% des données
+
 ```
 
 
 
 
 ```{r les-variables}
-colnames(df)
+colnames(df_sample_10)
 ```
 
 Le jeu de donnees a **`r ncol(df)`** variables et **`r nrow(df)`**
 
 ```{r types-des-variables}
-glimpse(df)
+glimpse(df_sample_10)
+View(df_sample_10)
 ```
+```{r statistiques}
+summary(df_sample_10)
+```
+
+
+```{r recherche valeurs manquantes}
+#recherche de valeur manquante
+colSums(is.na(df_sample_10))
+
+#traitement des valeurs manquantes dans la colonne EmailClusterId
+#nombre de valeurs manquantes dans la colonne
+nb_valeurs_manquant_EmailClusterId = sum(is.na(df_sample_10[,"EmailClusterId"]))
+ratio = nb_valeurs_manquant_EmailClusterId/nrow(df_sample_10)
+ratio
+df_sample_10_clean = df_sample_10[,colSums(is.na(df_sample_10))==0]
+
+```
+On a `r ratio` valeur manquantes dans la colonne EmailClusterId. Nous décidons donc de la supprimer.
+
+

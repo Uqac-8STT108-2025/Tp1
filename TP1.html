@@ -11,7 +11,7 @@
 
 <meta name="author" content="GroupeB" />
 
-<meta name="date" content="2025-02-01" />
+<meta name="date" content="2025-02-07" />
 
 <title>TP1</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">TP1</h1>
 <h4 class="author">GroupeB</h4>
-<h4 class="date">2025-02-01</h4>
+<h4 class="date">2025-02-07</h4>
 
 </div>
 
@@ -375,72 +375,72 @@ display: none;
 <ol start="3" style="list-style-type: decimal">
 <li>Regression logistique</li>
 </ol>
-<pre class="r"><code>df&lt;- read.csv(&quot;../base_de_donnee.csv&quot;)
+<pre class="r"><code>df&lt;- read.csv(&quot;data/GUIDE_Train.csv&quot;)
 head(df)</code></pre>
 <pre><code>##             Id OrgId IncidentId AlertId                Timestamp DetectorId
-## 1 1.245541e+12   657      11767   87199 2024-06-04T22:56:27.000Z        524
-## 2 1.400159e+12     3      91158  632273 2024-06-03T12:58:26.000Z          2
-## 3 1.279900e+12   145      32247  131719 2024-06-08T03:20:49.000Z       2932
-## 4 6.012955e+10   222      15294  917686 2024-06-12T12:07:31.000Z          0
-## 5 5.153961e+11   363       7615    5944 2024-06-06T17:42:05.000Z         27
-## 6 6.700149e+11     0        238  378946 2024-06-06T08:10:50.000Z          0
-##   AlertTitle          Category                 MitreTechniques  IncidentGrade
-## 1        563   LateralMovement     T1021;T1047;T1105;T1569.002 BenignPositive
-## 2          2 CommandAndControl                                 BenignPositive
-## 3      10807   LateralMovement T1021;T1027.002;T1027.005;T1105 BenignPositive
-## 4          0     InitialAccess                 T1078;T1078.004  FalsePositive
-## 5         18         Discovery                 T1087;T1087.002 BenignPositive
-## 6          0     InitialAccess                 T1078;T1078.004   TruePositive
-##   ActionGrouped ActionGranular        EntityType EvidenceRole DeviceId Sha256
-## 1                                           User     Impacted    98799 138268
-## 2                                        Machine     Impacted     1239 138268
-## 3                                        Process      Related    98799   4296
-## 4                              CloudLogonSession      Related    98799 138268
-## 5                                           User     Impacted    98799 138268
-## 6                                           User     Impacted    98799 138268
-##   IpAddress    Url AccountSid AccountUpn AccountObjectId AccountName DeviceName
-## 1    360606 160396       2610       3699          425863         863     153085
-## 2    360606 160396     441377     673934          425863      453297       2833
-## 3    360606 160396     441377     673934          425863      453297     153085
-## 4    360606 160396     441377     673934          425863      453297     153085
-## 5    360606 160396     133549     673934          425863      136104     153085
-## 6    360606 160396       2544       3392            2558        2696     153085
-##   NetworkMessageId EmailClusterId RegistryKey RegistryValueName
-## 1           529644             NA        1631               635
-## 2           529644             NA        1631               635
-## 3           529644             NA        1631               635
-## 4           529644             NA        1631               635
-## 5           529644             NA        1631               635
-## 6           529644             NA        1631               635
-##   RegistryValueData ApplicationId ApplicationName OAuthApplicationId
-## 1               860          2251            3421                881
-## 2               860          2251            3421                881
-## 3               860          2251            3421                881
-## 4               860          2251            3421                881
-## 5               860          2251            3421                881
-## 6               860          2251            3421                881
-##   ThreatFamily FileName FolderPath ResourceIdName ResourceType      Roles
-## 1                289573     117668           3586                        
-## 2                289573     117668           3586                        
-## 3                    14         22           3586                        
-## 4                289573     117668           3586                        
-## 5                289573     117668           3586              Suspicious
-## 6                289573     117668           3586                        
-##   OSFamily OSVersion AntispamDirection SuspicionLevel LastVerdict CountryCode
-## 1        5        66                       Suspicious  Suspicious         242
-## 2        0         0                       Suspicious  Suspicious         242
-## 3        5        66                       Suspicious  Suspicious         242
-## 4        5        66                                                      242
-## 5        5        66                                                      242
-## 6        5        66                                                      242
-##   State  City   Usage
-## 1  1445 10630 Private
-## 2  1445 10630  Public
-## 3  1445 10630  Public
-## 4  1445 10630  Public
-## 5  1445 10630  Public
-## 6  1445 10630  Public</code></pre>
-<pre class="r"><code>colnames(df)</code></pre>
+## 1 1.803886e+11     0        612  123247 2024-06-04T06:05:15.000Z          7
+## 2 4.552665e+11    88        326  210035 2024-06-14T03:01:25.000Z         58
+## 3 1.056562e+12   809      58352  712507 2024-06-13T04:52:55.000Z        423
+## 4 1.279900e+12    92      32992  774301 2024-06-10T16:39:36.000Z          2
+## 5 2.147484e+11   148       4359  188041 2024-06-15T01:08:07.000Z          9
+## 6 1.322850e+12    11     417400  825450 2024-06-10T13:30:56.000Z          0
+##   AlertTitle          Category MitreTechniques  IncidentGrade ActionGrouped
+## 1          6     InitialAccess                   TruePositive              
+## 2         43      Exfiltration                  FalsePositive              
+## 3        298     InitialAccess           T1189  FalsePositive              
+## 4          2 CommandAndControl                 BenignPositive              
+## 5         74         Execution                   TruePositive              
+## 6          0     InitialAccess T1078;T1078.004  FalsePositive              
+##   ActionGranular EntityType EvidenceRole DeviceId Sha256 IpAddress    Url
+## 1                        Ip      Related    98799 138268        27 160396
+## 2                      User     Impacted    98799 138268    360606 160396
+## 3                       Url      Related    98799 138268    360606  68652
+## 4                       Url      Related    98799 138268    360606     13
+## 5                      User     Impacted    98799 138268    360606 160396
+## 6                        Ip      Related    98799 138268     30410 160396
+##   AccountSid AccountUpn AccountObjectId AccountName DeviceName NetworkMessageId
+## 1     441377     673934          425863      453297     153085           529644
+## 2      22406      23032           22795       24887     153085           529644
+## 3     441377     673934          425863      453297     153085           529644
+## 4     441377     673934          425863      453297     153085           529644
+## 5        449        592             440         479     153085           529644
+## 6     441377     673934          425863      453297     153085           529644
+##   EmailClusterId RegistryKey RegistryValueName RegistryValueData ApplicationId
+## 1             NA        1631               635               860          2251
+## 2             NA        1631               635               860          2251
+## 3             NA        1631               635               860          2251
+## 4             NA        1631               635               860          2251
+## 5             NA        1631               635               860          2251
+## 6             NA        1631               635               860          2251
+##   ApplicationName OAuthApplicationId ThreatFamily FileName FolderPath
+## 1            3421                881                289573     117668
+## 2            3421                881                289573     117668
+## 3            3421                881                289573     117668
+## 4            3421                881                289573     117668
+## 5            3421                881                289573     117668
+## 6            3421                881                289573     117668
+##   ResourceIdName ResourceType Roles OSFamily OSVersion AntispamDirection
+## 1           3586                           5        66                  
+## 2           3586                           5        66                  
+## 3           3586                           5        66                  
+## 4           3586                           5        66                  
+## 5           3586                           5        66                  
+## 6           3586                           5        66                  
+##   SuspicionLevel LastVerdict CountryCode State  City
+## 1                                     31     6     3
+## 2                                    242  1445 10630
+## 3     Suspicious  Suspicious         242  1445 10630
+## 4     Suspicious  Suspicious         242  1445 10630
+## 5                                    242  1445 10630
+## 6                                      8     6     3</code></pre>
+<p>Afin de faciliter notre manipulation des données nous allons procéder
+à une reduction de la taille de l’échantillon d’entrainement. Nous
+travaillerons sur un échantillon dont la taille sera 10% de celle de
+l’original.</p>
+<pre class="r"><code>library(dplyr)
+set.seed(42)
+df_sample_10 &lt;- df %&gt;% sample_frac(0.1)  # Prend 10% des données</code></pre>
+<pre class="r"><code>colnames(df_sample_10)</code></pre>
 <pre><code>##  [1] &quot;Id&quot;                 &quot;OrgId&quot;              &quot;IncidentId&quot;        
 ##  [4] &quot;AlertId&quot;            &quot;Timestamp&quot;          &quot;DetectorId&quot;        
 ##  [7] &quot;AlertTitle&quot;         &quot;Category&quot;           &quot;MitreTechniques&quot;   
@@ -455,59 +455,190 @@ head(df)</code></pre>
 ## [34] &quot;FolderPath&quot;         &quot;ResourceIdName&quot;     &quot;ResourceType&quot;      
 ## [37] &quot;Roles&quot;              &quot;OSFamily&quot;           &quot;OSVersion&quot;         
 ## [40] &quot;AntispamDirection&quot;  &quot;SuspicionLevel&quot;     &quot;LastVerdict&quot;       
-## [43] &quot;CountryCode&quot;        &quot;State&quot;              &quot;City&quot;              
-## [46] &quot;Usage&quot;</code></pre>
-<p>Le jeu de donnees a <strong>46</strong> variables et
-<strong>4147992</strong></p>
-<pre class="r"><code>glimpse(df)</code></pre>
-<pre><code>## Rows: 4,147,992
-## Columns: 46
-## $ Id                 &lt;dbl&gt; 1.245541e+12, 1.400159e+12, 1.279900e+12, 6.012955e…
-## $ OrgId              &lt;int&gt; 657, 3, 145, 222, 363, 0, 133, 6, 7, 100, 1657, 103…
-## $ IncidentId         &lt;int&gt; 11767, 91158, 32247, 15294, 7615, 238, 105333, 2461…
-## $ AlertId            &lt;int&gt; 87199, 632273, 131719, 917686, 5944, 378946, 732769…
-## $ Timestamp          &lt;chr&gt; &quot;2024-06-04T22:56:27.000Z&quot;, &quot;2024-06-03T12:58:26.00…
-## $ DetectorId         &lt;int&gt; 524, 2, 2932, 0, 27, 0, 3, 17, 21, 72, 19, 1143, 42…
-## $ AlertTitle         &lt;int&gt; 563, 2, 10807, 0, 18, 0, 4, 1265, 528, 53, 15, 2083…
-## $ Category           &lt;chr&gt; &quot;LateralMovement&quot;, &quot;CommandAndControl&quot;, &quot;LateralMov…
-## $ MitreTechniques    &lt;chr&gt; &quot;T1021;T1047;T1105;T1569.002&quot;, &quot;&quot;, &quot;T1021;T1027.002…
-## $ IncidentGrade      &lt;chr&gt; &quot;BenignPositive&quot;, &quot;BenignPositive&quot;, &quot;BenignPositive…
+## [43] &quot;CountryCode&quot;        &quot;State&quot;              &quot;City&quot;</code></pre>
+<p>Le jeu de donnees a <strong>45</strong> variables et
+<strong>9516837</strong></p>
+<pre class="r"><code>glimpse(df_sample_10)</code></pre>
+<pre><code>## Rows: 951,684
+## Columns: 45
+## $ Id                 &lt;dbl&gt; 9.964324e+11, 2.319282e+11, 2.233383e+11, 6.700149e…
+## $ OrgId              &lt;int&gt; 25, 41, 6, 278, 123, 5, 1, 264, 340, 2, 38, 56, 11,…
+## $ IncidentId         &lt;int&gt; 425, 165612, 2369, 3231, 288, 1352, 46, 357236, 475…
+## $ AlertId            &lt;int&gt; 14050, 56931, 1276, 29411, 1076445, 313641, 546816,…
+## $ Timestamp          &lt;chr&gt; &quot;2024-06-11T21:20:06.000Z&quot;, &quot;2024-06-03T16:07:55.00…
+## $ DetectorId         &lt;int&gt; 30, 32, 17, 1, 5, 7, 7, 0, 11, 18, 2, 1, 0, 47, 320…
+## $ AlertTitle         &lt;int&gt; 7053, 19727, 1355, 1, 49, 6, 6, 0, 9, 14, 2, 1, 0, …
+## $ Category           &lt;chr&gt; &quot;Exfiltration&quot;, &quot;Exfiltration&quot;, &quot;Impact&quot;, &quot;InitialA…
+## $ MitreTechniques    &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;T1566.002&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;T1078;T1078.0…
+## $ IncidentGrade      &lt;chr&gt; &quot;BenignPositive&quot;, &quot;TruePositive&quot;, &quot;BenignPositive&quot;,…
 ## $ ActionGrouped      &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
 ## $ ActionGranular     &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
-## $ EntityType         &lt;chr&gt; &quot;User&quot;, &quot;Machine&quot;, &quot;Process&quot;, &quot;CloudLogonSession&quot;, …
+## $ EntityType         &lt;chr&gt; &quot;User&quot;, &quot;File&quot;, &quot;Ip&quot;, &quot;MailMessage&quot;, &quot;CloudApplicat…
 ## $ EvidenceRole       &lt;chr&gt; &quot;Impacted&quot;, &quot;Impacted&quot;, &quot;Related&quot;, &quot;Related&quot;, &quot;Impa…
-## $ DeviceId           &lt;int&gt; 98799, 1239, 98799, 98799, 98799, 98799, 593, 98799…
-## $ Sha256             &lt;int&gt; 138268, 138268, 4296, 138268, 138268, 138268, 13826…
-## $ IpAddress          &lt;int&gt; 360606, 360606, 360606, 360606, 360606, 360606, 360…
+## $ DeviceId           &lt;int&gt; 98799, 98799, 98799, 98799, 98799, 98799, 98799, 98…
+## $ Sha256             &lt;int&gt; 138268, 138268, 138268, 138268, 138268, 138268, 138…
+## $ IpAddress          &lt;int&gt; 360606, 360606, 889, 360606, 360606, 360606, 360606…
 ## $ Url                &lt;int&gt; 160396, 160396, 160396, 160396, 160396, 160396, 160…
-## $ AccountSid         &lt;int&gt; 2610, 441377, 441377, 441377, 133549, 2544, 441377,…
-## $ AccountUpn         &lt;int&gt; 3699, 673934, 673934, 673934, 673934, 3392, 673934,…
-## $ AccountObjectId    &lt;int&gt; 425863, 425863, 425863, 425863, 425863, 2558, 42586…
-## $ AccountName        &lt;int&gt; 863, 453297, 453297, 453297, 136104, 2696, 453297, …
-## $ DeviceName         &lt;int&gt; 153085, 2833, 153085, 153085, 153085, 153085, 1794,…
-## $ NetworkMessageId   &lt;int&gt; 529644, 529644, 529644, 529644, 529644, 529644, 529…
+## $ AccountSid         &lt;int&gt; 84434, 441377, 441377, 441377, 441377, 14, 441377, …
+## $ AccountUpn         &lt;int&gt; 61799, 673934, 673934, 81964, 673934, 26, 673934, 1…
+## $ AccountObjectId    &lt;int&gt; 85243, 425863, 425863, 425863, 425863, 12, 425863, …
+## $ AccountName        &lt;int&gt; 84555, 453297, 453297, 453297, 453297, 15, 453297, …
+## $ DeviceName         &lt;int&gt; 153085, 153085, 153085, 153085, 153085, 153085, 153…
+## $ NetworkMessageId   &lt;int&gt; 529644, 529644, 529644, 58992, 529644, 529644, 5296…
 ## $ EmailClusterId     &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
 ## $ RegistryKey        &lt;int&gt; 1631, 1631, 1631, 1631, 1631, 1631, 1631, 1631, 163…
 ## $ RegistryValueName  &lt;int&gt; 635, 635, 635, 635, 635, 635, 635, 635, 635, 635, 6…
 ## $ RegistryValueData  &lt;int&gt; 860, 860, 860, 860, 860, 860, 860, 860, 860, 860, 8…
-## $ ApplicationId      &lt;int&gt; 2251, 2251, 2251, 2251, 2251, 2251, 2251, 2251, 225…
-## $ ApplicationName    &lt;int&gt; 3421, 3421, 3421, 3421, 3421, 3421, 3421, 3421, 342…
+## $ ApplicationId      &lt;int&gt; 2251, 2251, 2251, 2251, 5, 2251, 2251, 2251, 2251, …
+## $ ApplicationName    &lt;int&gt; 3421, 3421, 3421, 3421, 5, 3421, 3421, 3421, 3421, …
 ## $ OAuthApplicationId &lt;int&gt; 881, 881, 881, 881, 881, 881, 881, 881, 881, 881, 8…
 ## $ ThreatFamily       &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
-## $ FileName           &lt;int&gt; 289573, 289573, 14, 289573, 289573, 289573, 289573,…
-## $ FolderPath         &lt;int&gt; 117668, 117668, 22, 117668, 117668, 117668, 117668,…
+## $ FileName           &lt;int&gt; 289573, 118938, 289573, 289573, 289573, 289573, 289…
+## $ FolderPath         &lt;int&gt; 117668, 0, 117668, 117668, 117668, 117668, 117668, …
 ## $ ResourceIdName     &lt;int&gt; 3586, 3586, 3586, 3586, 3586, 3586, 3586, 3586, 358…
 ## $ ResourceType       &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
-## $ Roles              &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;Suspicious&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;…
-## $ OSFamily           &lt;int&gt; 5, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, …
-## $ OSVersion          &lt;int&gt; 66, 0, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, …
-## $ AntispamDirection  &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
-## $ SuspicionLevel     &lt;chr&gt; &quot;Suspicious&quot;, &quot;Suspicious&quot;, &quot;Suspicious&quot;, &quot;&quot;, &quot;&quot;, &quot;…
-## $ LastVerdict        &lt;chr&gt; &quot;Suspicious&quot;, &quot;Suspicious&quot;, &quot;Suspicious&quot;, &quot;&quot;, &quot;&quot;, &quot;…
+## $ Roles              &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
+## $ OSFamily           &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, …
+## $ OSVersion          &lt;int&gt; 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 0, 66, 66, …
+## $ AntispamDirection  &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;Inbound&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, …
+## $ SuspicionLevel     &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;Suspicious…
+## $ LastVerdict        &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;NoThreatsFound&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;…
 ## $ CountryCode        &lt;int&gt; 242, 242, 242, 242, 242, 242, 242, 242, 242, 242, 2…
 ## $ State              &lt;int&gt; 1445, 1445, 1445, 1445, 1445, 1445, 1445, 1445, 144…
-## $ City               &lt;int&gt; 10630, 10630, 10630, 10630, 10630, 10630, 10630, 10…
-## $ Usage              &lt;chr&gt; &quot;Private&quot;, &quot;Public&quot;, &quot;Public&quot;, &quot;Public&quot;, &quot;Public&quot;, …</code></pre>
+## $ City               &lt;int&gt; 10630, 10630, 10630, 10630, 10630, 10630, 10630, 10…</code></pre>
+<pre class="r"><code>View(df_sample_10)</code></pre>
+<pre class="r"><code>summary(df_sample_10)</code></pre>
+<pre><code>##        Id                OrgId          IncidentId        AlertId       
+##  Min.   :0.000e+00   Min.   :   0.0   Min.   :     0   Min.   :      0  
+##  1st Qu.:4.123e+11   1st Qu.:  10.0   1st Qu.:   505   1st Qu.:  23199  
+##  Median :8.418e+11   Median :  45.0   Median : 10330   Median : 216274  
+##  Mean   :8.430e+11   Mean   : 181.8   Mean   : 70528   Mean   : 406276  
+##  3rd Qu.:1.271e+12   3rd Qu.: 171.0   3rd Qu.: 84233   3rd Qu.: 671253  
+##  Max.   :1.709e+12   Max.   :6139.0   Max.   :599705   Max.   :1721456  
+##                                                                         
+##   Timestamp           DetectorId       AlertTitle       Category        
+##  Length:951684      Min.   :   0.0   Min.   :     0   Length:951684     
+##  Class :character   1st Qu.:   2.0   1st Qu.:     2   Class :character  
+##  Mode  :character   Median :   9.0   Median :    11   Mode  :character  
+##                     Mean   : 111.7   Mean   :  2947                     
+##                     3rd Qu.:  45.0   3rd Qu.:   179                     
+##                     Max.   :9508.0   Max.   :113166                     
+##                                                                         
+##  MitreTechniques    IncidentGrade      ActionGrouped      ActionGranular    
+##  Length:951684      Length:951684      Length:951684      Length:951684     
+##  Class :character   Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+##                                                                             
+##                                                                             
+##                                                                             
+##                                                                             
+##   EntityType        EvidenceRole          DeviceId         Sha256      
+##  Length:951684      Length:951684      Min.   :    0   Min.   :     0  
+##  Class :character   Class :character   1st Qu.:98799   1st Qu.:138268  
+##  Mode  :character   Mode  :character   Median :98799   Median :138268  
+##                                        Mean   :95653   Mean   :128747  
+##                                        3rd Qu.:98799   3rd Qu.:138268  
+##                                        Max.   :98799   Max.   :138268  
+##                                                                        
+##    IpAddress           Url           AccountSid       AccountUpn    
+##  Min.   :     0   Min.   :     0   Min.   :     0   Min.   :     0  
+##  1st Qu.:360606   1st Qu.:160396   1st Qu.:441377   1st Qu.: 91766  
+##  Median :360606   Median :160396   Median :441377   Median :673934  
+##  Mean   :285721   Mean   :150330   Mean   :352332   Mean   :463955  
+##  3rd Qu.:360606   3rd Qu.:160396   3rd Qu.:441377   3rd Qu.:673934  
+##  Max.   :360606   Max.   :160396   Max.   :441377   Max.   :673934  
+##                                                                     
+##  AccountObjectId   AccountName       DeviceName     NetworkMessageId
+##  Min.   :     0   Min.   :     0   Min.   :     0   Min.   :     0  
+##  1st Qu.:425863   1st Qu.:453297   1st Qu.:153085   1st Qu.:529644  
+##  Median :425863   Median :453297   Median :153085   Median :529644  
+##  Mean   :340849   Mean   :356773   Mean   :143245   Mean   :479780  
+##  3rd Qu.:425863   3rd Qu.:453297   3rd Qu.:153085   3rd Qu.:529644  
+##  Max.   :425863   Max.   :453297   Max.   :153085   Max.   :529644  
+##                                                                     
+##  EmailClusterId       RegistryKey   RegistryValueName RegistryValueData
+##  Min.   :1.172e+07   Min.   :   0   Min.   :  0.0     Min.   :  0.0    
+##  1st Qu.:2.754e+09   1st Qu.:1631   1st Qu.:635.0     1st Qu.:860.0    
+##  Median :3.552e+09   Median :1631   Median :635.0     Median :860.0    
+##  Mean   :3.238e+09   Mean   :1628   Mean   :634.7     Mean   :859.5    
+##  3rd Qu.:4.108e+09   3rd Qu.:1631   3rd Qu.:635.0     3rd Qu.:860.0    
+##  Max.   :4.295e+09   Max.   :1631   Max.   :635.0     Max.   :860.0    
+##  NA&#39;s   :942070                                                        
+##  ApplicationId  ApplicationName OAuthApplicationId ThreatFamily      
+##  Min.   :   0   Min.   :   0    Min.   :  0.0      Length:951684     
+##  1st Qu.:2251   1st Qu.:3421    1st Qu.:881.0      Class :character  
+##  Median :2251   Median :3421    Median :881.0      Mode  :character  
+##  Mean   :2201   Mean   :3343    Mean   :880.8                        
+##  3rd Qu.:2251   3rd Qu.:3421    3rd Qu.:881.0                        
+##  Max.   :2251   Max.   :3421    Max.   :881.0                        
+##                                                                      
+##     FileName        FolderPath     ResourceIdName ResourceType      
+##  Min.   :     0   Min.   :     0   Min.   :   0   Length:951684     
+##  1st Qu.:289573   1st Qu.:117668   1st Qu.:3586   Class :character  
+##  Median :289573   Median :117668   Median :3586   Mode  :character  
+##  Mean   :262381   Mean   :107669   Mean   :3583                     
+##  3rd Qu.:289573   3rd Qu.:117668   3rd Qu.:3586                     
+##  Max.   :289573   Max.   :117668   Max.   :3586                     
+##                                                                     
+##     Roles              OSFamily       OSVersion     AntispamDirection 
+##  Length:951684      Min.   :0.000   Min.   : 0.00   Length:951684     
+##  Class :character   1st Qu.:5.000   1st Qu.:66.00   Class :character  
+##  Mode  :character   Median :5.000   Median :66.00   Mode  :character  
+##                     Mean   :4.899   Mean   :64.66                     
+##                     3rd Qu.:5.000   3rd Qu.:66.00                     
+##                     Max.   :5.000   Max.   :66.00                     
+##                                                                       
+##  SuspicionLevel     LastVerdict         CountryCode        State     
+##  Length:951684      Length:951684      Min.   :  0.0   Min.   :   0  
+##  Class :character   Class :character   1st Qu.:242.0   1st Qu.:1445  
+##  Mode  :character   Mode  :character   Median :242.0   Median :1445  
+##                                        Mean   :223.7   Mean   :1351  
+##                                        3rd Qu.:242.0   3rd Qu.:1445  
+##                                        Max.   :242.0   Max.   :1445  
+##                                                                      
+##       City      
+##  Min.   :    0  
+##  1st Qu.:10630  
+##  Median :10630  
+##  Mean   : 9935  
+##  3rd Qu.:10630  
+##  Max.   :10630  
+## </code></pre>
+<pre class="r"><code>#recherche de valeur manquante
+colSums(is.na(df_sample_10))</code></pre>
+<pre><code>##                 Id              OrgId         IncidentId            AlertId 
+##                  0                  0                  0                  0 
+##          Timestamp         DetectorId         AlertTitle           Category 
+##                  0                  0                  0                  0 
+##    MitreTechniques      IncidentGrade      ActionGrouped     ActionGranular 
+##                  0                  0                  0                  0 
+##         EntityType       EvidenceRole           DeviceId             Sha256 
+##                  0                  0                  0                  0 
+##          IpAddress                Url         AccountSid         AccountUpn 
+##                  0                  0                  0                  0 
+##    AccountObjectId        AccountName         DeviceName   NetworkMessageId 
+##                  0                  0                  0                  0 
+##     EmailClusterId        RegistryKey  RegistryValueName  RegistryValueData 
+##             942070                  0                  0                  0 
+##      ApplicationId    ApplicationName OAuthApplicationId       ThreatFamily 
+##                  0                  0                  0                  0 
+##           FileName         FolderPath     ResourceIdName       ResourceType 
+##                  0                  0                  0                  0 
+##              Roles           OSFamily          OSVersion  AntispamDirection 
+##                  0                  0                  0                  0 
+##     SuspicionLevel        LastVerdict        CountryCode              State 
+##                  0                  0                  0                  0 
+##               City 
+##                  0</code></pre>
+<pre class="r"><code>#traitement des valeurs manquantes dans la colonne EmailClusterId
+#nombre de valeurs manquantes dans la colonne
+nb_valeurs_manquant_EmailClusterId = sum(is.na(df_sample_10[,&quot;EmailClusterId&quot;]))
+ratio = nb_valeurs_manquant_EmailClusterId/nrow(df_sample_10)
+ratio</code></pre>
+<pre><code>## [1] 0.9898979</code></pre>
+<pre class="r"><code>df_sample_10_clean = df_sample_10[,colSums(is.na(df_sample_10))==0]</code></pre>
+<p>On a 0.9898979 valeur manquantes dans la colonne EmailClusterId. Nous
+décidons donc de la supprimer.</p>
 </div>
 
 
