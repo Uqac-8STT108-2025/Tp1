@@ -39,8 +39,11 @@ library("tidyverse")
 
 
 ```{r importation-du-dataset}
-df<- read.csv("data/GUIDE_Train.csv")
+#df<- read.csv("data/GUIDE_Train.csv")
+df<-read.csv("C:/Users/Marie-Anne/Downloads/archive/GUIDE_Train.csv")
 head(df)
+
+
 ```
 Afin de faciliter notre manipulation des données nous allons procéder à une reduction de la taille de l'échantillon
 d'entrainement. Nous travaillerons sur un échantillon dont la taille sera 10% de celle de l'original.
@@ -83,4 +86,25 @@ df_sample_10_clean = df_sample_10[,colSums(is.na(df_sample_10))==0]
 ```
 On a `r ratio` valeur manquantes dans la colonne EmailClusterId. Nous décidons donc de la supprimer.
 
+### Visualisation:
+```{r visualisation}
+#Les histogrammes de variables quantitatives 
+#Les organisations enregistrés 
+hist(df_sample_10$OrgId, breaks=15,col="red", main="Histogramme des organisations",
+     xlab="Les organisations"
+     )
 
+#Les incidents et les alertes 
+par(mfrow=c(2,2))
+
+hist(df_sample_10$IncidentId, breaks=15,col="red",main="Histogramme des incidents", 
+     xlab="Les incidents"
+     )
+
+hist(df_sample_10$AlertId,breaks=15,col="red",main="Histogramme des alertes",
+     xlab="Les alertes"
+     )
+#Les boxplots 
+
+
+```
