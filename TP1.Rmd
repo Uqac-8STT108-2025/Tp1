@@ -39,10 +39,8 @@ library("tidyverse")
 
 
 ```{r importation-du-dataset}
-#df<- read.csv("data/GUIDE_Train.csv")
-df<-read.csv("C:/Users/Marie-Anne/Downloads/archive/GUIDE_Train.csv")
+df<- read.csv("../data/GUIDE_Train.csv")
 head(df)
-
 
 ```
 Afin de faciliter notre manipulation des données nous allons procéder à une reduction de la taille de l'échantillon

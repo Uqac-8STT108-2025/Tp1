@@ -11,7 +11,7 @@
 
 <meta name="author" content="GroupeB" />
 
-<meta name="date" content="2025-02-07" />
+<meta name="date" content="2025-02-09" />
 
 <title>TP1</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">TP1</h1>
 <h4 class="author">GroupeB</h4>
-<h4 class="date">2025-02-07</h4>
+<h4 class="date">2025-02-09</h4>
 
 </div>
 
@@ -375,64 +375,71 @@ display: none;
 <ol start="3" style="list-style-type: decimal">
 <li>Regression logistique</li>
 </ol>
-<pre class="r"><code>df&lt;- read.csv(&quot;data/GUIDE_Train.csv&quot;)
+<pre class="r"><code>df&lt;- read.csv(&quot;../data/GUIDE_Train.csv&quot;)
 head(df)</code></pre>
 <pre><code>##             Id OrgId IncidentId AlertId                Timestamp DetectorId
-## 1 1.803886e+11     0        612  123247 2024-06-04T06:05:15.000Z          7
-## 2 4.552665e+11    88        326  210035 2024-06-14T03:01:25.000Z         58
-## 3 1.056562e+12   809      58352  712507 2024-06-13T04:52:55.000Z        423
-## 4 1.279900e+12    92      32992  774301 2024-06-10T16:39:36.000Z          2
-## 5 2.147484e+11   148       4359  188041 2024-06-15T01:08:07.000Z          9
-## 6 1.322850e+12    11     417400  825450 2024-06-10T13:30:56.000Z          0
-##   AlertTitle          Category MitreTechniques  IncidentGrade ActionGrouped
-## 1          6     InitialAccess                   TruePositive              
-## 2         43      Exfiltration                  FalsePositive              
-## 3        298     InitialAccess           T1189  FalsePositive              
-## 4          2 CommandAndControl                 BenignPositive              
-## 5         74         Execution                   TruePositive              
-## 6          0     InitialAccess T1078;T1078.004  FalsePositive              
-##   ActionGranular EntityType EvidenceRole DeviceId Sha256 IpAddress    Url
-## 1                        Ip      Related    98799 138268        27 160396
-## 2                      User     Impacted    98799 138268    360606 160396
-## 3                       Url      Related    98799 138268    360606  68652
-## 4                       Url      Related    98799 138268    360606     13
-## 5                      User     Impacted    98799 138268    360606 160396
-## 6                        Ip      Related    98799 138268     30410 160396
-##   AccountSid AccountUpn AccountObjectId AccountName DeviceName NetworkMessageId
-## 1     441377     673934          425863      453297     153085           529644
-## 2      22406      23032           22795       24887     153085           529644
-## 3     441377     673934          425863      453297     153085           529644
-## 4     441377     673934          425863      453297     153085           529644
-## 5        449        592             440         479     153085           529644
-## 6     441377     673934          425863      453297     153085           529644
-##   EmailClusterId RegistryKey RegistryValueName RegistryValueData ApplicationId
-## 1             NA        1631               635               860          2251
-## 2             NA        1631               635               860          2251
-## 3             NA        1631               635               860          2251
-## 4             NA        1631               635               860          2251
-## 5             NA        1631               635               860          2251
-## 6             NA        1631               635               860          2251
-##   ApplicationName OAuthApplicationId ThreatFamily FileName FolderPath
-## 1            3421                881                289573     117668
-## 2            3421                881                289573     117668
-## 3            3421                881                289573     117668
-## 4            3421                881                289573     117668
-## 5            3421                881                289573     117668
-## 6            3421                881                289573     117668
-##   ResourceIdName ResourceType Roles OSFamily OSVersion AntispamDirection
-## 1           3586                           5        66                  
-## 2           3586                           5        66                  
-## 3           3586                           5        66                  
-## 4           3586                           5        66                  
-## 5           3586                           5        66                  
-## 6           3586                           5        66                  
-##   SuspicionLevel LastVerdict CountryCode State  City
-## 1                                     31     6     3
-## 2                                    242  1445 10630
-## 3     Suspicious  Suspicious         242  1445 10630
-## 4     Suspicious  Suspicious         242  1445 10630
-## 5                                    242  1445 10630
-## 6                                      8     6     3</code></pre>
+## 1 1.245541e+12   657      11767   87199 2024-06-04T22:56:27.000Z        524
+## 2 1.400159e+12     3      91158  632273 2024-06-03T12:58:26.000Z          2
+## 3 1.279900e+12   145      32247  131719 2024-06-08T03:20:49.000Z       2932
+## 4 6.012955e+10   222      15294  917686 2024-06-12T12:07:31.000Z          0
+## 5 5.153961e+11   363       7615    5944 2024-06-06T17:42:05.000Z         27
+## 6 6.700149e+11     0        238  378946 2024-06-06T08:10:50.000Z          0
+##   AlertTitle          Category                 MitreTechniques  IncidentGrade
+## 1        563   LateralMovement     T1021;T1047;T1105;T1569.002 BenignPositive
+## 2          2 CommandAndControl                                 BenignPositive
+## 3      10807   LateralMovement T1021;T1027.002;T1027.005;T1105 BenignPositive
+## 4          0     InitialAccess                 T1078;T1078.004  FalsePositive
+## 5         18         Discovery                 T1087;T1087.002 BenignPositive
+## 6          0     InitialAccess                 T1078;T1078.004   TruePositive
+##   ActionGrouped ActionGranular        EntityType EvidenceRole DeviceId Sha256
+## 1                                           User     Impacted    98799 138268
+## 2                                        Machine     Impacted     1239 138268
+## 3                                        Process      Related    98799   4296
+## 4                              CloudLogonSession      Related    98799 138268
+## 5                                           User     Impacted    98799 138268
+## 6                                           User     Impacted    98799 138268
+##   IpAddress    Url AccountSid AccountUpn AccountObjectId AccountName DeviceName
+## 1    360606 160396       2610       3699          425863         863     153085
+## 2    360606 160396     441377     673934          425863      453297       2833
+## 3    360606 160396     441377     673934          425863      453297     153085
+## 4    360606 160396     441377     673934          425863      453297     153085
+## 5    360606 160396     133549     673934          425863      136104     153085
+## 6    360606 160396       2544       3392            2558        2696     153085
+##   NetworkMessageId EmailClusterId RegistryKey RegistryValueName
+## 1           529644             NA        1631               635
+## 2           529644             NA        1631               635
+## 3           529644             NA        1631               635
+## 4           529644             NA        1631               635
+## 5           529644             NA        1631               635
+## 6           529644             NA        1631               635
+##   RegistryValueData ApplicationId ApplicationName OAuthApplicationId
+## 1               860          2251            3421                881
+## 2               860          2251            3421                881
+## 3               860          2251            3421                881
+## 4               860          2251            3421                881
+## 5               860          2251            3421                881
+## 6               860          2251            3421                881
+##   ThreatFamily FileName FolderPath ResourceIdName ResourceType      Roles
+## 1                289573     117668           3586                        
+## 2                289573     117668           3586                        
+## 3                    14         22           3586                        
+## 4                289573     117668           3586                        
+## 5                289573     117668           3586              Suspicious
+## 6                289573     117668           3586                        
+##   OSFamily OSVersion AntispamDirection SuspicionLevel LastVerdict CountryCode
+## 1        5        66                       Suspicious  Suspicious         242
+## 2        0         0                       Suspicious  Suspicious         242
+## 3        5        66                       Suspicious  Suspicious         242
+## 4        5        66                                                      242
+## 5        5        66                                                      242
+## 6        5        66                                                      242
+##   State  City   Usage
+## 1  1445 10630 Private
+## 2  1445 10630  Public
+## 3  1445 10630  Public
+## 4  1445 10630  Public
+## 5  1445 10630  Public
+## 6  1445 10630  Public</code></pre>
 <p>Afin de faciliter notre manipulation des données nous allons procéder
 à une reduction de la taille de l’échantillon d’entrainement. Nous
 travaillerons sur un échantillon dont la taille sera 10% de celle de
@@ -455,77 +462,79 @@ df_sample_10 &lt;- df %&gt;% sample_frac(0.1)  # Prend 10% des données</code></
 ## [34] &quot;FolderPath&quot;         &quot;ResourceIdName&quot;     &quot;ResourceType&quot;      
 ## [37] &quot;Roles&quot;              &quot;OSFamily&quot;           &quot;OSVersion&quot;         
 ## [40] &quot;AntispamDirection&quot;  &quot;SuspicionLevel&quot;     &quot;LastVerdict&quot;       
-## [43] &quot;CountryCode&quot;        &quot;State&quot;              &quot;City&quot;</code></pre>
-<p>Le jeu de donnees a <strong>45</strong> variables et
-<strong>9516837</strong></p>
+## [43] &quot;CountryCode&quot;        &quot;State&quot;              &quot;City&quot;              
+## [46] &quot;Usage&quot;</code></pre>
+<p>Le jeu de donnees a <strong>46</strong> variables et
+<strong>4147992</strong></p>
 <pre class="r"><code>glimpse(df_sample_10)</code></pre>
-<pre><code>## Rows: 951,684
-## Columns: 45
-## $ Id                 &lt;dbl&gt; 9.964324e+11, 2.319282e+11, 2.233383e+11, 6.700149e…
-## $ OrgId              &lt;int&gt; 25, 41, 6, 278, 123, 5, 1, 264, 340, 2, 38, 56, 11,…
-## $ IncidentId         &lt;int&gt; 425, 165612, 2369, 3231, 288, 1352, 46, 357236, 475…
-## $ AlertId            &lt;int&gt; 14050, 56931, 1276, 29411, 1076445, 313641, 546816,…
-## $ Timestamp          &lt;chr&gt; &quot;2024-06-11T21:20:06.000Z&quot;, &quot;2024-06-03T16:07:55.00…
-## $ DetectorId         &lt;int&gt; 30, 32, 17, 1, 5, 7, 7, 0, 11, 18, 2, 1, 0, 47, 320…
-## $ AlertTitle         &lt;int&gt; 7053, 19727, 1355, 1, 49, 6, 6, 0, 9, 14, 2, 1, 0, …
-## $ Category           &lt;chr&gt; &quot;Exfiltration&quot;, &quot;Exfiltration&quot;, &quot;Impact&quot;, &quot;InitialA…
-## $ MitreTechniques    &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;T1566.002&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;T1078;T1078.0…
-## $ IncidentGrade      &lt;chr&gt; &quot;BenignPositive&quot;, &quot;TruePositive&quot;, &quot;BenignPositive&quot;,…
+<pre><code>## Rows: 414,799
+## Columns: 46
+## $ Id                 &lt;dbl&gt; 6.098854e+11, 5.153961e+11, 1.271310e+12, 6.098854e…
+## $ OrgId              &lt;int&gt; 17, 0, 92, 349, 6, 114, 52, 2, 302, 35, 95, 89, 91,…
+## $ IncidentId         &lt;int&gt; 269, 483, 132774, 1048, 2262, 3970, 273190, 34968, …
+## $ AlertId            &lt;int&gt; 133068, 538628, 245024, 25139, 1437, 88794, 1711562…
+## $ Timestamp          &lt;chr&gt; &quot;2024-06-07T20:32:42.000Z&quot;, &quot;2024-06-08T19:17:24.00…
+## $ DetectorId         &lt;int&gt; 20, 7, 2, 31, 17, 3, 99, 42, 2, 4, 106, 1, 122, 99,…
+## $ AlertTitle         &lt;int&gt; 7774, 6, 2, 3153, 106, 112, 112077, 27, 2, 3, 79, 1…
+## $ Category           &lt;chr&gt; &quot;Exfiltration&quot;, &quot;InitialAccess&quot;, &quot;CommandAndControl…
+## $ MitreTechniques    &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;T1568;T1008&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, …
+## $ IncidentGrade      &lt;chr&gt; &quot;FalsePositive&quot;, &quot;TruePositive&quot;, &quot;BenignPositive&quot;, …
 ## $ ActionGrouped      &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
 ## $ ActionGranular     &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
-## $ EntityType         &lt;chr&gt; &quot;User&quot;, &quot;File&quot;, &quot;Ip&quot;, &quot;MailMessage&quot;, &quot;CloudApplicat…
-## $ EvidenceRole       &lt;chr&gt; &quot;Impacted&quot;, &quot;Impacted&quot;, &quot;Related&quot;, &quot;Related&quot;, &quot;Impa…
+## $ EntityType         &lt;chr&gt; &quot;Mailbox&quot;, &quot;Ip&quot;, &quot;User&quot;, &quot;File&quot;, &quot;Ip&quot;, &quot;Url&quot;, &quot;Ip&quot;,…
+## $ EvidenceRole       &lt;chr&gt; &quot;Related&quot;, &quot;Related&quot;, &quot;Impacted&quot;, &quot;Related&quot;, &quot;Relat…
 ## $ DeviceId           &lt;int&gt; 98799, 98799, 98799, 98799, 98799, 98799, 98799, 98…
-## $ Sha256             &lt;int&gt; 138268, 138268, 138268, 138268, 138268, 138268, 138…
-## $ IpAddress          &lt;int&gt; 360606, 360606, 889, 360606, 360606, 360606, 360606…
-## $ Url                &lt;int&gt; 160396, 160396, 160396, 160396, 160396, 160396, 160…
-## $ AccountSid         &lt;int&gt; 84434, 441377, 441377, 441377, 441377, 14, 441377, …
-## $ AccountUpn         &lt;int&gt; 61799, 673934, 673934, 81964, 673934, 26, 673934, 1…
-## $ AccountObjectId    &lt;int&gt; 85243, 425863, 425863, 425863, 425863, 12, 425863, …
-## $ AccountName        &lt;int&gt; 84555, 453297, 453297, 453297, 453297, 15, 453297, …
+## $ Sha256             &lt;int&gt; 138268, 138268, 138268, 10274, 138268, 138268, 1382…
+## $ IpAddress          &lt;int&gt; 360606, 92, 360606, 360606, 875, 360606, 104632, 36…
+## $ Url                &lt;int&gt; 160396, 160396, 160396, 160396, 160396, 52, 160396,…
+## $ AccountSid         &lt;int&gt; 441377, 441377, 300622, 441377, 441377, 441377, 441…
+## $ AccountUpn         &lt;int&gt; 2, 673934, 453494, 673934, 673934, 673934, 673934, …
+## $ AccountObjectId    &lt;int&gt; 425863, 425863, 236591, 425863, 425863, 425863, 425…
+## $ AccountName        &lt;int&gt; 453297, 453297, 319772, 453297, 453297, 453297, 453…
 ## $ DeviceName         &lt;int&gt; 153085, 153085, 153085, 153085, 153085, 153085, 153…
-## $ NetworkMessageId   &lt;int&gt; 529644, 529644, 529644, 58992, 529644, 529644, 5296…
+## $ NetworkMessageId   &lt;int&gt; 529644, 529644, 529644, 529644, 529644, 529644, 529…
 ## $ EmailClusterId     &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
 ## $ RegistryKey        &lt;int&gt; 1631, 1631, 1631, 1631, 1631, 1631, 1631, 1631, 163…
 ## $ RegistryValueName  &lt;int&gt; 635, 635, 635, 635, 635, 635, 635, 635, 635, 635, 6…
 ## $ RegistryValueData  &lt;int&gt; 860, 860, 860, 860, 860, 860, 860, 860, 860, 860, 8…
-## $ ApplicationId      &lt;int&gt; 2251, 2251, 2251, 2251, 5, 2251, 2251, 2251, 2251, …
-## $ ApplicationName    &lt;int&gt; 3421, 3421, 3421, 3421, 5, 3421, 3421, 3421, 3421, …
+## $ ApplicationId      &lt;int&gt; 2251, 2251, 2251, 2251, 2251, 2251, 2251, 2251, 225…
+## $ ApplicationName    &lt;int&gt; 3421, 3421, 3421, 3421, 3421, 3421, 3421, 3421, 342…
 ## $ OAuthApplicationId &lt;int&gt; 881, 881, 881, 881, 881, 881, 881, 881, 881, 881, 8…
-## $ ThreatFamily       &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
-## $ FileName           &lt;int&gt; 289573, 118938, 289573, 289573, 289573, 289573, 289…
-## $ FolderPath         &lt;int&gt; 117668, 0, 117668, 117668, 117668, 117668, 117668, …
+## $ ThreatFamily       &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;Nemucod&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, …
+## $ FileName           &lt;int&gt; 289573, 289573, 289573, 34151, 289573, 289573, 2895…
+## $ FolderPath         &lt;int&gt; 117668, 117668, 117668, 51986, 117668, 117668, 1176…
 ## $ ResourceIdName     &lt;int&gt; 3586, 3586, 3586, 3586, 3586, 3586, 3586, 3586, 358…
 ## $ ResourceType       &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
 ## $ Roles              &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
-## $ OSFamily           &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, …
-## $ OSVersion          &lt;int&gt; 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 0, 66, 66, …
-## $ AntispamDirection  &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;Inbound&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, …
-## $ SuspicionLevel     &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;Suspicious…
-## $ LastVerdict        &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;NoThreatsFound&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;…
-## $ CountryCode        &lt;int&gt; 242, 242, 242, 242, 242, 242, 242, 242, 242, 242, 2…
-## $ State              &lt;int&gt; 1445, 1445, 1445, 1445, 1445, 1445, 1445, 1445, 144…
-## $ City               &lt;int&gt; 10630, 10630, 10630, 10630, 10630, 10630, 10630, 10…</code></pre>
+## $ OSFamily           &lt;int&gt; 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 5, 5, …
+## $ OSVersion          &lt;int&gt; 66, 66, 66, 66, 66, 66, 66, 66, 0, 66, 66, 66, 66, …
+## $ AntispamDirection  &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
+## $ SuspicionLevel     &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;Suspicious&quot;, &quot;Suspicious&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,…
+## $ LastVerdict        &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;Suspicious&quot;, &quot;Malicious&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, …
+## $ CountryCode        &lt;int&gt; 242, 25, 242, 242, 242, 242, 242, 242, 242, 4, 242,…
+## $ State              &lt;int&gt; 1445, 49, 1445, 1445, 1445, 1445, 1445, 1445, 1445,…
+## $ City               &lt;int&gt; 10630, 47, 10630, 10630, 10630, 10630, 10630, 10630…
+## $ Usage              &lt;chr&gt; &quot;Public&quot;, &quot;Public&quot;, &quot;Public&quot;, &quot;Public&quot;, &quot;Public&quot;, &quot;…</code></pre>
 <pre class="r"><code>View(df_sample_10)</code></pre>
 <pre class="r"><code>summary(df_sample_10)</code></pre>
 <pre><code>##        Id                OrgId          IncidentId        AlertId       
-##  Min.   :0.000e+00   Min.   :   0.0   Min.   :     0   Min.   :      0  
-##  1st Qu.:4.123e+11   1st Qu.:  10.0   1st Qu.:   505   1st Qu.:  23199  
-##  Median :8.418e+11   Median :  45.0   Median : 10330   Median : 216274  
-##  Mean   :8.430e+11   Mean   : 181.8   Mean   : 70528   Mean   : 406276  
-##  3rd Qu.:1.271e+12   3rd Qu.: 171.0   3rd Qu.: 84233   3rd Qu.: 671253  
-##  Max.   :1.709e+12   Max.   :6139.0   Max.   :599705   Max.   :1721456  
+##  Min.   :1.000e+00   Min.   :   0.0   Min.   :     3   Min.   :      0  
+##  1st Qu.:4.209e+11   1st Qu.:   8.0   1st Qu.:   411   1st Qu.:  23710  
+##  Median :8.418e+11   Median :  43.0   Median :  8911   Median : 222945  
+##  Mean   :8.467e+11   Mean   : 174.5   Mean   : 67995   Mean   : 406797  
+##  3rd Qu.:1.280e+12   3rd Qu.: 172.0   3rd Qu.: 79501   3rd Qu.: 670391  
+##  Max.   :1.709e+12   Max.   :6032.0   Max.   :599700   Max.   :1721302  
 ##                                                                         
 ##   Timestamp           DetectorId       AlertTitle       Category        
-##  Length:951684      Min.   :   0.0   Min.   :     0   Length:951684     
+##  Length:414799      Min.   :   0.0   Min.   :     0   Length:414799     
 ##  Class :character   1st Qu.:   2.0   1st Qu.:     2   Class :character  
-##  Mode  :character   Median :   9.0   Median :    11   Mode  :character  
-##                     Mean   : 111.7   Mean   :  2947                     
-##                     3rd Qu.:  45.0   3rd Qu.:   179                     
-##                     Max.   :9508.0   Max.   :113166                     
+##  Mode  :character   Median :   7.0   Median :     9   Mode  :character  
+##                     Mean   : 101.2   Mean   :  2530                     
+##                     3rd Qu.:  39.0   3rd Qu.:   118                     
+##                     Max.   :9421.0   Max.   :113132                     
 ##                                                                         
 ##  MitreTechniques    IncidentGrade      ActionGrouped      ActionGranular    
-##  Length:951684      Length:951684      Length:951684      Length:951684     
+##  Length:414799      Length:414799      Length:414799      Length:414799     
 ##  Class :character   Class :character   Class :character   Class :character  
 ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
 ##                                                                             
@@ -533,18 +542,18 @@ df_sample_10 &lt;- df %&gt;% sample_frac(0.1)  # Prend 10% des données</code></
 ##                                                                             
 ##                                                                             
 ##   EntityType        EvidenceRole          DeviceId         Sha256      
-##  Length:951684      Length:951684      Min.   :    0   Min.   :     0  
+##  Length:414799      Length:414799      Min.   :    0   Min.   :     0  
 ##  Class :character   Class :character   1st Qu.:98799   1st Qu.:138268  
 ##  Mode  :character   Mode  :character   Median :98799   Median :138268  
-##                                        Mean   :95653   Mean   :128747  
+##                                        Mean   :95729   Mean   :128419  
 ##                                        3rd Qu.:98799   3rd Qu.:138268  
 ##                                        Max.   :98799   Max.   :138268  
 ##                                                                        
 ##    IpAddress           Url           AccountSid       AccountUpn    
 ##  Min.   :     0   Min.   :     0   Min.   :     0   Min.   :     0  
-##  1st Qu.:360606   1st Qu.:160396   1st Qu.:441377   1st Qu.: 91766  
+##  1st Qu.:360606   1st Qu.:160396   1st Qu.:441377   1st Qu.:101225  
 ##  Median :360606   Median :160396   Median :441377   Median :673934  
-##  Mean   :285721   Mean   :150330   Mean   :352332   Mean   :463955  
+##  Mean   :287432   Mean   :150370   Mean   :353054   Mean   :470868  
 ##  3rd Qu.:360606   3rd Qu.:160396   3rd Qu.:441377   3rd Qu.:673934  
 ##  Max.   :360606   Max.   :160396   Max.   :441377   Max.   :673934  
 ##                                                                     
@@ -552,20 +561,20 @@ df_sample_10 &lt;- df %&gt;% sample_frac(0.1)  # Prend 10% des données</code></
 ##  Min.   :     0   Min.   :     0   Min.   :     0   Min.   :     0  
 ##  1st Qu.:425863   1st Qu.:453297   1st Qu.:153085   1st Qu.:529644  
 ##  Median :425863   Median :453297   Median :153085   Median :529644  
-##  Mean   :340849   Mean   :356773   Mean   :143245   Mean   :479780  
+##  Mean   :341735   Mean   :357931   Mean   :141663   Mean   :483749  
 ##  3rd Qu.:425863   3rd Qu.:453297   3rd Qu.:153085   3rd Qu.:529644  
 ##  Max.   :425863   Max.   :453297   Max.   :153085   Max.   :529644  
 ##                                                                     
 ##  EmailClusterId       RegistryKey   RegistryValueName RegistryValueData
-##  Min.   :1.172e+07   Min.   :   0   Min.   :  0.0     Min.   :  0.0    
-##  1st Qu.:2.754e+09   1st Qu.:1631   1st Qu.:635.0     1st Qu.:860.0    
-##  Median :3.552e+09   Median :1631   Median :635.0     Median :860.0    
-##  Mean   :3.238e+09   Mean   :1628   Mean   :634.7     Mean   :859.5    
+##  Min.   :1.927e+05   Min.   :   0   Min.   :  0.0     Min.   :  0.0    
+##  1st Qu.:2.682e+09   1st Qu.:1631   1st Qu.:635.0     1st Qu.:860.0    
+##  Median :3.458e+09   Median :1631   Median :635.0     Median :860.0    
+##  Mean   :3.219e+09   Mean   :1628   Mean   :634.5     Mean   :859.2    
 ##  3rd Qu.:4.108e+09   3rd Qu.:1631   3rd Qu.:635.0     3rd Qu.:860.0    
-##  Max.   :4.295e+09   Max.   :1631   Max.   :635.0     Max.   :860.0    
-##  NA&#39;s   :942070                                                        
+##  Max.   :4.294e+09   Max.   :1631   Max.   :635.0     Max.   :860.0    
+##  NA&#39;s   :410625                                                        
 ##  ApplicationId  ApplicationName OAuthApplicationId ThreatFamily      
-##  Min.   :   0   Min.   :   0    Min.   :  0.0      Length:951684     
+##  Min.   :   0   Min.   :   0    Min.   :  0.0      Length:414799     
 ##  1st Qu.:2251   1st Qu.:3421    1st Qu.:881.0      Class :character  
 ##  Median :2251   Median :3421    Median :881.0      Mode  :character  
 ##  Mean   :2201   Mean   :3343    Mean   :880.8                        
@@ -573,36 +582,36 @@ df_sample_10 &lt;- df %&gt;% sample_frac(0.1)  # Prend 10% des données</code></
 ##  Max.   :2251   Max.   :3421    Max.   :881.0                        
 ##                                                                      
 ##     FileName        FolderPath     ResourceIdName ResourceType      
-##  Min.   :     0   Min.   :     0   Min.   :   0   Length:951684     
+##  Min.   :     0   Min.   :     0   Min.   :   0   Length:414799     
 ##  1st Qu.:289573   1st Qu.:117668   1st Qu.:3586   Class :character  
 ##  Median :289573   Median :117668   Median :3586   Mode  :character  
-##  Mean   :262381   Mean   :107669   Mean   :3583                     
+##  Mean   :261880   Mean   :107429   Mean   :3583                     
 ##  3rd Qu.:289573   3rd Qu.:117668   3rd Qu.:3586                     
 ##  Max.   :289573   Max.   :117668   Max.   :3586                     
 ##                                                                     
 ##     Roles              OSFamily       OSVersion     AntispamDirection 
-##  Length:951684      Min.   :0.000   Min.   : 0.00   Length:951684     
+##  Length:414799      Min.   :0.000   Min.   : 0.00   Length:414799     
 ##  Class :character   1st Qu.:5.000   1st Qu.:66.00   Class :character  
 ##  Mode  :character   Median :5.000   Median :66.00   Mode  :character  
-##                     Mean   :4.899   Mean   :64.66                     
+##                     Mean   :4.898   Mean   :64.65                     
 ##                     3rd Qu.:5.000   3rd Qu.:66.00                     
 ##                     Max.   :5.000   Max.   :66.00                     
 ##                                                                       
 ##  SuspicionLevel     LastVerdict         CountryCode        State     
-##  Length:951684      Length:951684      Min.   :  0.0   Min.   :   0  
+##  Length:414799      Length:414799      Min.   :  0.0   Min.   :   0  
 ##  Class :character   Class :character   1st Qu.:242.0   1st Qu.:1445  
 ##  Mode  :character   Mode  :character   Median :242.0   Median :1445  
-##                                        Mean   :223.7   Mean   :1351  
+##                                        Mean   :222.2   Mean   :1345  
 ##                                        3rd Qu.:242.0   3rd Qu.:1445  
 ##                                        Max.   :242.0   Max.   :1445  
 ##                                                                      
-##       City      
-##  Min.   :    0  
-##  1st Qu.:10630  
-##  Median :10630  
-##  Mean   : 9935  
-##  3rd Qu.:10630  
-##  Max.   :10630  
+##       City          Usage          
+##  Min.   :    0   Length:414799     
+##  1st Qu.:10630   Class :character  
+##  Median :10630   Mode  :character  
+##  Mean   : 9884                     
+##  3rd Qu.:10630                     
+##  Max.   :10630                     
 ## </code></pre>
 <pre class="r"><code>#recherche de valeur manquante
 colSums(is.na(df_sample_10))</code></pre>
@@ -619,7 +628,7 @@ colSums(is.na(df_sample_10))</code></pre>
 ##    AccountObjectId        AccountName         DeviceName   NetworkMessageId 
 ##                  0                  0                  0                  0 
 ##     EmailClusterId        RegistryKey  RegistryValueName  RegistryValueData 
-##             942070                  0                  0                  0 
+##             410625                  0                  0                  0 
 ##      ApplicationId    ApplicationName OAuthApplicationId       ThreatFamily 
 ##                  0                  0                  0                  0 
 ##           FileName         FolderPath     ResourceIdName       ResourceType 
@@ -628,17 +637,38 @@ colSums(is.na(df_sample_10))</code></pre>
 ##                  0                  0                  0                  0 
 ##     SuspicionLevel        LastVerdict        CountryCode              State 
 ##                  0                  0                  0                  0 
-##               City 
-##                  0</code></pre>
+##               City              Usage 
+##                  0                  0</code></pre>
 <pre class="r"><code>#traitement des valeurs manquantes dans la colonne EmailClusterId
 #nombre de valeurs manquantes dans la colonne
 nb_valeurs_manquant_EmailClusterId = sum(is.na(df_sample_10[,&quot;EmailClusterId&quot;]))
 ratio = nb_valeurs_manquant_EmailClusterId/nrow(df_sample_10)
 ratio</code></pre>
-<pre><code>## [1] 0.9898979</code></pre>
+<pre><code>## [1] 0.9899373</code></pre>
 <pre class="r"><code>df_sample_10_clean = df_sample_10[,colSums(is.na(df_sample_10))==0]</code></pre>
-<p>On a 0.9898979 valeur manquantes dans la colonne EmailClusterId. Nous
+<p>On a 0.9899373 valeur manquantes dans la colonne EmailClusterId. Nous
 décidons donc de la supprimer.</p>
+<div id="visualisation" class="section level3">
+<h3>Visualisation:</h3>
+<pre class="r"><code>#Les histogrammes de variables quantitatives 
+#Les organisations enregistrés 
+hist(df_sample_10$OrgId, breaks=15,col=&quot;red&quot;, main=&quot;Histogramme des organisations&quot;,
+     xlab=&quot;Les organisations&quot;
+     )</code></pre>
+<p><img role="img" src="data:image/png;base64,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" width="672" /></p>
+<pre class="r"><code>#Les incidents et les alertes 
+par(mfrow=c(2,2))
+
+hist(df_sample_10$IncidentId, breaks=15,col=&quot;red&quot;,main=&quot;Histogramme des incidents&quot;, 
+     xlab=&quot;Les incidents&quot;
+     )
+
+hist(df_sample_10$AlertId,breaks=15,col=&quot;red&quot;,main=&quot;Histogramme des alertes&quot;,
+     xlab=&quot;Les alertes&quot;
+     )
+#Les boxplots </code></pre>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAA9lBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6AGY6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kLY6kNtmAABmADpmOgBmOjpmOmZmZgBmZjpmZmZmZpBmkGZmkJBmkLZmkNtmtrZmtttmtv+QOgCQOjqQZjqQZmaQkDqQkGaQkJCQkLaQtpCQtraQttuQtv+Q27aQ29uQ2/+2ZgC2Zjq2ZpC2kDq2kGa2kJC2tma2tpC2tra2ttu227a229u22/+2/9u2///bkDrbkGbbtmbbtpDbtrbbttvb27bb29vb2//b/9vb////AAD/tmb/25D/27b/29v//7b//9v///9kHPuDAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3de4Pb1pkfYI4la2orcqRKWyu77kqq0mwadzejrnOrXU+krOOqo8vw+3+Z8griRhB4CRCHwvP8YYscXA6Alz/iejibAxAyG7sBAOdKgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKEBQ4gF6+2I2m93bvrpavPj87eIf7y4X/3q+f7S//s8TtK0PN4vl+OzHrmMdWvwWg3ef8dms03Gp2HY61XDCa+dTDND3jzuky7jOJkDPaJ2OS8W206GGk147n2CA/vWyS7qM61wC9JzW6bhUbDvtazjttXOeAdqkY7qMq69yHHjGZ7VOx6Vi22m90ImvHQE6KgH6qVGx7QjQk1COScz4rNbpuFRsOwL0JFqcUXrzZPni4v5vV3V6Pdt6uJ7Ad18u/n3nwQ+7SX73xeKNb95+fLSphOVUn7//b4v/3l8O9dPLL5ajf7kZ5WY1zw+vFjO582wxi5+ebAds/tu6act5f/VzzXKtGvGsUI6VoYtLlpMt/nL1XPx+Peb977O/v18twp1vfi4N3mrG1WmW1uneZjFXsftKo9TIYi6WJpRbvpeltdNllidx7gH68XG2hhef+ko5Lk9Ar321WcHvNu/c/d/5cvznR7N1YaxmmJ/CquT+uBnp8//7avO354f+lm/aw/JibRvx+eusHCtDl5esPHoWoP/2ojji7atsvP9aHLzVjKvTLKzThmYxV7H1pVFpZL4oKxPKLd9/L4zWZZYncuYBmt8wq1VYLMfr3F/XR1IfH+Xe2pVjNspV/s/LOdzMaq02V9PfCnO6V1yqd5f5wVeNqAxdWbLy+JXF39ZjfhEeFgbvPuPVePl12tQs5iq2MMVMpZH5b5TKbHPLV/zy7jLLEzmHAC0oluPqgOLfFv94fbldqbmvtlW5fP7D/Pbfs1W+2ja/fDt/c5lVwuqti2fzbOTlV//r7RjrkvtqO8Zi3PXUHh7422qyF99uWva8ulDVRhSGrlmyTOnTuGh7bgmvNxN//2g77dLgB2ZcN83dOm1qFnMVO68rjWojcwtdnW1++fJrp9OH5ETOPECvspV7fedXf1l9Y+9W+HpnYPXmcsMtv6FWf9ztlu3KcXvM8uEPT9Zf/Nt9h5tsplfbjb/6IsxKdc/fltNffydez0oXEmoaUR26ZsmKE8jCbjXe6l/L8VYNeFiYTTZ4qxnXTLNU7fuaxVzFFpYsU2lksShLsy0sX/H4qf0sT+QTCNDP96TLqlo2+/XbA6vrWXYK/CpfjtXd/0I5rjbmdSFYsnLc87fr2fYrcVmhhenXNKI6dNP122KA7ipzOaXdQt++uP/N94XBW824ZpqlAD14WXnKVGyjaoDWzLawfLu1E5zlsM48QNenSO7+NnfZsP7DvvnOyr2VFUVWlzsf/vRkO69VyT0vjFAs1fq/rRq+uypTOCKqNqJm6Jolqy5i7oTbtgWVvYf6D+/+GddMs1TE+5rFXMU2lUaukdlC1822sHzFYu86y8GdQ4C2OiV//9v8RcusHLfjbu6+yL2V3Y9R+hr76ddf5Et/t1NQX457/lY89V+4rJlfpk0jaoauWbJMU4A27OF0mPHeAG1qFnMVu680So3MFrputoXly9ZO51mexJkHaP4L/+KXxTNKhXHXlVNTCeXN9Ti3iXosx9wJ7hbleK92yTJ1X8r9BOi92mnmT+Q3NIu5it1TseVG7g3Qe5Xl2xegB2Z5IuceoMu7xi/zq7Tx+/xgOW5u17j/2x9alFywHGt2KuqHLi9ZJhig7WZ8IEAbmsVcxdaWRrWRPQXo+NV4/gE6X55b+Xq1FlelETqjtB1se6NEq5Jr+lsuhioazygVFZYs0xSgufP9lcFbzfhggO5tFnMVW1sa1UbWnQOtm119sbeY5amceYB+ePPyi3VZZveGtbymuXqnXI67e4COLcfCzkRJzTXN6tA1S5ZpCtDcQm9v7Wi6Cl+dcXOANjWLuYotLNlGTSNrD4sqa20+37d/fmiWJ3PeAbraMutVvfpnsRzXd7jtuatudT1yfzlmU46WY+6zUFZzV11l6LolK05gT4Bmt/XtJtF0H2i1mY0B2tgs5iq2sGT5PxUbWXyyoOa5pZoA7fYhOZHzDtD1LbcPfp7P32dfz5utdfvz5i6H+uc6Vt9YlXJc30T+bL554uKYcswmdfvq4he/K95nsW3E7rmO6tA1S5ZpCtD1Qn/1dj1e6QPaZsZ109yt06ZmMVexdaVR08jywyCF2RYCdLd2un1ITuTMA/Rj/ure+mO/vTC3fPEq98fcN1Wmckap+Kxw8Zu2WzluT5znZpSpaURl6JolyzQG6Lqq8gtd2sM5MOO6ae7WaVOzmKvY2tKoNrL0gNH+5cuvnU4fkhM58wCd3+76u9r0PbTdWquxGvq2+WPt5toW8MU/b+7VDZfj8qdctu7uOgyb5/908a/bDnaqQ9cs2VZzgO56Y9osdO4CRosZ105zt04bmsVcxdaXRqWRdUWZTah4J0lu7XSZ5Ymce4BuO7+cfflNtsZXfQZ++c16An9YdSD4ze6I5HbTGeKe25J/Wg//dnvKOl6O274K7zzY9dSZNWLdxePPWRePdUNXl2yjOUCz/kDrul48POP6aebW6d5mMVexe0qj3MjibQmlCZVuxcuvnQ6zPI3EA3RAN8WtBIlTsQmaWIDeXPzit5svr+vZ3rs2IBUqNm0TC9D1XRjLPofcxsg5ULFpm1iAFi5ROx4ifSo2aVML0HxvY3fdxUjyVGzSphagy58HXP7q4ezOg2/Hbgm0oWITNr0ABeiJAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUICjNAJ21MHYbmS41yUaK27xNfCpWxqImyaS4zWez/3eQYmUs++pTTU5QittcgJIyAUomxW0uQEmZACWT4jYXoKRMgJJJcZsLUFImQMmkuM0FKCkToGRS3OYClJQJUDIpbnMByogO3twpQMmkuM0FKCM6eHu8ACWT4jYXoKRDgNIgxW0uQEmHAKVBittcgJIOAUqDFLe5ACUdApQGKW5zAUo6BCgNUtzmApR0CFAapLjNBSjpEKA0SHGbC1DSIUBpkOI2F6CkQ4DSIMVtLkBJhwClwQjbPPyssWLlSH/7zdMvF57+01/eth1FgNIggQBtXaCKlWO8f5mvugc/tBtLgNJg/G0uQDmJ15eL2LxY7H4udkJX/3zeajQBSoPxt7kA5RTeXc7ufrt7+ebx7OL3bcYToDQobvOP//mfWh7Y9NgCAUpLx9Tn1ezzwnnP2xeze23GE6A0KAXoo8WRTduTQ321QIDS0hH1+fFReYfz3eVnP7YYUYDSoLjNb7/7Ynl+/aQZKkBp64j6/PioHJfVd2oJUBpUtvntHx6fNkMFKB1E69MeKEOo2+a3bzY1+v1JWiBA6SRWn1eze86B0rc92/z2zZNVjX7T+n7jeAsEKF0F6tNVeAawb5v/9PJydbvxxbPBWyBA6SxQnzel+0Bn7UYVoDSo3eZvXq6/3v/+3aLQ2t1ufEQLBCjdBOuz+CTSfU8icbzqNt8cHG1O0l+X7p4boAUClA6Oqs/1s/D3PQtPT0rbfF2ds93p+Zb3ehzTAgFKW0nXp5qcoOqN9LP73xbeSadAFevUpV2fanKCygF699visc37Pw99L5MApa2j61N3dvRr/G0uQDkN3dnRu/G3uQDlJHRnR//2bfO/xyY36CGSYmWre326kZ4BVLb5+5f/6cfV2fruD8MPfYikWInXp+7sGEB5m1/PZp/9uOk3rONDSIMfIilWwvWpMxGGUNrmN9vniz8sO2zo9BDS8IdIinXy4vWpOzuGUOoP9EWuy5ryMc8Bwx8iKdapO6I+7YEyhPJ9oLma6naP8gkKVLFO3RH1qTs7htBjgA5+iKRYp+6YAHUVngFUDuF355VuUjtEUqxTd0R96s6OIZS2+fXsYvst/eZy9rDLlIY/RFKsk3dEferOjgGUtvki9WYXv3j69OnXi+/obl/wrsIzuCPqc0V3dvSrvM2XFbrRtT4HP0RSrBxRn0EClAbVbf7+18v4+/JX3XthGvoQSbFyTH3GCFAa9LzN2xwizcqqAwhQBqE7O/o1wjYXoIxCd3b0rm6b/33r55O0QIDSSbA+dWdH/8rbvPAt3f3XEnRnx6Di9elGegZQ2ubvLmfxANWdHQM7oj51Z8cAStv8ahF8v/vzVvvdyCXd2TG0eH3qTIQhVH6Vs+PTHTtupGdoR9Sn7uwYQkNnIh3pzo6hHVGf9kAZQm8BqjMRBnfcF7zu7Ohd5Rxop17oc3Rnx/Di9ekqPEOoXIWPPmFsD5ThxetTd3YMobTNP7yeXTyIXYXXnR2DO6I+dWfHACpX4cP32bkKz9COqc8V3dnRr/4CVHd2DO3oAG1jVlYdQE2yUT6E/3tex2fhdWfHwI6qz5YEKO2N0J1duQUClFPRnR39Gn+bC1BOQ3d29K6mR/qXXyxPLn38h5YFdnQLBCgdhOtTd3b0r/KbSK82Z+c/Porcs6w7OwYVr0830jOA8ja/ms3u/uPyDvjbFy0LbEd3dgwtXp+6s2MApW1+s6zK9TOYiwLr1vON7uwYWrw+dSbCECrPwj/MHmK/6fbDsW6kZ3Dx+tSdHUMo30i/DL1NZXXs+kZ3dgztiPq0B8oQ6rqzS7VAFevUHVGfurNjCA17oC0DMBtVd3YM7Ij6dBWeITScA71q9w29YQ+U4cXrU3d2DKFyFX5RVqsCXd5w1+lGO93ZMbgj6lN3dgyg5j7QO19fXvzL14sS6/YF7yo8w4vX54ru7OhXZZu/yr6iv+rY97fu7BhevD6DBCgNqtv8w3dfLKrzTtsHiXJ0Z8fw4vUZI0BpoDs7JkR3dvRrhG0e7rBWsXIM3dnRuz57pG87SwFK0DH1qTs7+tfjbyIt6c6OAaX9o4dqcoL6DFDd2TGsY+pTd3YMoLjNb/+W/eb2y8vP/i2xQyTFOnVH1KfORBjC/m3esa8GN9JzUh3rU3d2DKFhm990e9RDd3acVLf6tAfKEBq2+cdH3Tqs1ZkIp9StPnVnxxAaA1R3dqSr4zG8q/AMoGGbX3f8yQR7oJxSt/rUnR1D2HsV/k8vO3Z3ozs7hnZMferOjgE03QfqKjxpOaY+V3RnR78aArRrfze6s2NgR9VnkAClwd5n4QPT0p0dAzuqPmMEKA10ZwdNBCgNxt/mApSUCVAaNHZnN2CfdrkWCFDaSro+1eQENfbGFLvWefuHr7+8/6vvW7dAgNJSL/XZkQClQW8B+vHJ/fWAf71cj3e31U1MApT2jqnP6KgClAblQ/g3l7P7v1scGP3t5eXsl10OkbYP1l0vCvPOL54sU1R3dvQsXp+3LwQo/Stt83eX2d3v7x+1TMC1TYDebH9u9r0b6eldvD5XX+2f/7mg1a0iApQGpW1+lSvKm47Pwq8C9Cp7vs6jnPQuXp/zVYJ2i9wVAUqD8jnQ3FFNpDemfJci7y5bFbgApa0j6nPpKnLFSYDSoPcA3Y2jOzt6dmSAtj0oKhCgNCj1xvRi9jB70bU7u2U5377Y7YEKUHp2RH2u3LQ8L58nQGlQ2ubXs4tn2T8jF5GudhXe8hyVAKW1eH2GCVAalLb58maPi6e/+/Mfvr7s2N3i8j67i199/+5yW+HvLnN7C00tEKC0Fa/PMAFKg/I2z90u91WnCd1+9yR/d93Hx21vcRagtBeuzzABSoPqNv/p5RfLe+G/CTxjfPu33zzZBuij2d12/dkJULo4oj5DBCgN+t/mt/+xPPP58dfftjzDL0BJmQClwQjbvPJEXXUAAUoqBCgNqtv8/eIQaXEU/vEfhvrFBAHKEQavzxIBSoPKRaRXm+tAH7s+ahxugQCltZTrU01OUHmbX81md/9x+YPuty8CNx2HWiBAaS3l+lSTE1Ta5qtHNbYPFbW7j/PoFghQ2kq6PtXkBFV6Y3qY65mu86NyoRYIUNpKuj7V5ASVOxNZHhZtCrRrZyKDd1irWKfuiPpsL3yRU01OUF1vTKECPUGP34p16o6oz/YEKO017IG+u+xWoIP3+K1Yp+6o+gwSoDRoOAd61bW3hqF7/Fask3dUfcYIUBpUrsLPnq0LdHnDXdc4HLjHb8U6ecfVZ4gApUHNfaB3vr68+JevZ4Huwgbu8VuxclR9hghQGlS2+atdd2HdbxIZtsdvxcpx9RkhQGlQ3eYfvlt1F/bgRI8aC1A6Sbc+1eQEjb/NBSgpE6A0KP+oXPaTM6drgQClpbTrU01OUN19oCdugQClpbTrs/okyd578flUNPwu/KlaIEBpKe36FKATVHcj/YlbIEBpK+n63Fu3ivXTVf5Z41ezi191exTz6BYIUNpKuj4F6ASVD+G7dwZydAsEKC2lXZ8CdIIEKOcj7foUoBNU2rQf/p53kp/eFqC0lnR9CtAJGn/TClBSJkBpMP6mFaCkTIDSYLdpP5zkgKimBQKUFtKvTwE6QdmmHeMe5XULBCiHnUF9NgSoG+w/VdUAvf31r07TT9i2BQKUw86gPgXoBFUD9NRf9QKUFs6gPhsCVBF/qgQoZ+EM6lOATpAA5SycQX0K0AkaIUAPnggSoFQIUFIkQDkLn2aAurh07hzCcxbOoD4F6AQJUM7CGdRnIEAV97kToJyFM6hPATpBuQC9+MXTpa8vN/94+vQkdywLUFo4g/oUoBOUC9DqmZjE+lss1lgrJ2g/J3EG9dljgCroc7EL0CdfVtxPq0AF6ISdQX0K0Akaf4tEA/TwMA6FON4oAaqgz8X4W0SAkrK0AtSeaWLGX/MClJQJUBqMv+YFKClLK0AVemLGX/MClJSdR4DaNR3J+CtYgJIyAUqD8VewACVl5xGge0cYY5VNyfgreNAAbWWMpeZcnHmAKvphjb8iBSgp+0QDtLMx1v0ZGH+9DBqgrQYaY6k5F2ceoPveF6z9GH/5BSgp+0QDtPOEBGit8ZdfgJIyAdo8wsR3WcdfnPEDdHpbnfYEaPMIvRlj4x5v/GYLUFImQHse4dNK1vFbN36AthlmjDVDCgToieYsQIMtOIsAPf+vSmIE6NhzTvrjNn4rBCgpE6Bjzznpj1vPrfjbb54uuwp/+k9/af1zNecRoK0mJGRTN2h9ftoxlt6c+y2NoD5b8f5lPike/NCyBdMK0P70uOWmYej6nGaMjTfnJD4ZPc7s9eWi7ReLr/fFl/zqn8/bteDTCdA2w5yp/spkNIPX5zRjbLw5J1Gs/c3s3eXs7re7l28ezy5+36oF0wrQniZ06ijurUxGM3x9TjPGEpxzf0XTojx6m9LV7PPCeaXbF7N7rVogQJOf26eQssPXZ5JhMsU591Uyrcqjrwl9fFT+Qn93Wf+73Qc/d/3uO3EyfdXSENQnQ9RVjwFaLsfqO5tZHlquEVYtfeirloagPhmirkbYA4XTU58Moc9zoPdC55jgFNQnAxj/KjycgvpkAD2eF7gp3Wc3e9bftOFY6pP+Dfck0v2WT3rAaahPejfIs/D3uzxrXOdUl+XoVV9VNBz1eYb62viDSLF1Y28wgsYunBMZezVPzdjbu1GKrettlX3CE0qwSYlXen/GW1BzTk6KrUvvI53ehBJsUuKV3p8phskU59xKiq1L7yOd3oQSbFLild6fKYbJFOfcSoqtS+8jnd6EEmxS4pXenymGyRTn3EqKrUvvI53ehBJsUuKV3p8phskU59xKiq1L7yOd3oQSbFLild6fKYbJFOfcSoqtS+8jnd6EEmxS4pXenymGyRTn3EqKrUvvI53ehBJsUuKV3p8phskU59xKiq1L7yOd3oQSbFLild6fKYbJFOfcSoqtS+8jnd6EEmxS4pXenymGyRTn3EqKrUvvI53ehBJsUuKV3p8phskU59xKiq1L7yOd3oQSbFLild6fKYbJFOfcSoqtS+8jnd6EEmxS4pXenymGyRTn3EqKrUvvI53ehBJsUuKV3p8phskU59xKiq1L7yOd3oQSbFLild6fKYbJFOfcSoqtS+8jnd6EEmxS4pXenymGyRTn3ErarQNImAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBI0QoO+fzGaz+z/Ehu42cjsfvvsi3qLr2ca9Xtu09O7y4vfpNOn9y8vZ7M6zt+m0aBRDFGB59TTXfKeXDW5ffPZjH7M4wSc0YacP0Jt1rVw8jwzdbeSWDbrclO/DSIuuBsuG2xezlgF6iia93qylz1sl6MlW0qkNUYDl1dNc851eNrmeZQHa4xwHWUEJO3mAvrucff7D/H3LcCgN3W3k1g26+/18OdFZm41easLHRz02pWixX9Ju2qdo0uJzcfeH+e2/t8vA062kExuiAMurp7nmO71ssiivbYD2OMdBVlDKTh6gV+t9mMXuVZtPYmnobiO3s/0iXky0zd5VqQnvLtvtknW3KMWWVXiCJmUrJ7fbMm6LxjFEAZZXT3PNd3q53+2r2S5Ae5zjICsoZacO0I+PNvt5N3s/idkglaFbjNzZblPf7M2r/S1a/G+gQlm062lDgJ64Sdm6WcT6nv30MVbSqQ1RgOXV01zznV7u9+bxbPbldpge5zjMCkrZqQP0prLVflqddP52N0juk1gaujpyn7JrNh1atNgjG+hkz/XsXi7Rx27SVWXvfOwWjWKYAiyunuaa7/Ryr8WfL55lA/c4x2E/oSk6dYBebz+Jiz2s1UWbV7PyxYncui8NXRm5V9u86tKi+dVn/7q8On3/+54b8+7ysx93ATp2k6rre+wWjWOYAiyunuaa7/Ryr4+Pvnq7C7se5zjsJzRFpw7Qq9waXh64XM9mv3w7v/3r5e4wJvdJLA1dHrnvpq0KqlOLFn/Z6LdcFlN/vjtuHr1Jy7ndvv5ieRvTPI0WjWOQAiytnuaa7/Ryv5/nub3FHuc47Cc0RacP0Hv5f727nK0/krnD1cInsTB06WW/3q3DoFuLFkNffPN2/uFVz+FwvZz4ze7K5shNWrbgRW6Xc/wWjWOQAiytnuaa7/SyWS5Ae5vjoJ/QJI0coNku//ZlzsOTbp7FV+ZmB7RLi2629z5d9XrSfHkAv0un8Zu0vCNgtjjqW167vZdEi8YxSAGWVo8APSvjBmjuTMnqMzlegN5ubgPt2KLMYv+rv72r1QF8FqAJNGkZoA83LVi0KYEWjWPYfFivHgF6VsYN0N3pn9nurrQxDuGX+flwM/MuLcpPoL8WXa+ntQnQBJq0vD367Xa+D1No0TiGzYftaUQBekbGvYh0+JN4mlPUWX52bVF+wXpr0foAvkOADt6kd9nFoshmG6JF4xj4GslVTZEPdw3HRaQ+jHsbU+0x3elvY/r4eLa5KNK1RTs9ZkPhiPheCk3KNeEqjRaNY+C7dIqXBYa+i8htTH0Y90b62u+pk99I//7RLOv7oGOLMn0WTClAE2jSrgmrfyXQonEMe5/4evWc7D52N9L3YeRHOeuuy572Uc71Yxm7Rya7tSg7ZNn/iGPc9ip8Ak26zn0wHibRolEMUoCl1XOyJymrYedRzu5OHaDbctnsxGQn1/acMzlBVwW3xZ5jurVom3G37Xoi6SZ3H+jYTcqasI7OBFo0jiEKsLx6TtWXxy7jdCYSd/IALfV3dTWbPfhhPv/pcX3HGSfoLOu61I1dpxYt0/fZfP7+cbu+8LrJ7lJPoEmLtfTg59V9oA8TadEohijA8uo5VW9yuwDVnV3cyQN0/np9bm9z1vF2+1D1nh5Yi0OXX/agcEX5YecWLct+9fJZby3KZAGaQpO2TfgqmRaNov8CrK6e5prv9LJJ7ii7xzkOsYJSdvoALff5/2b58s5XP7cbuvcfDHi37Y9+G6AdW3S7/D2QiwdD/IRB7jnJBJpU6n4pgRaNYohfrCivntP8okb+NKWf9IgaIUABPg0CFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABesDti9m9ruO8u5w97zbIzezi9y3a8r9+7NoUpiRSrCWHalcNFgnQAxIK0NeXnyleGgwfoGqwRIAe0ENNttAqQK9nipcmwweoGiwRoAcIUM6GAD05AXqAAOVsCNCTE6AHVGvypyez2ez+t/lXd755mx9iXYTL/75f/vXBD5v3X38xm12sB93W6e13i/fu/pAFaH7ixQnczFae75knhIp1Pv/w3ZeLty/WZZoFaLESP/s/rxZ1+ptdDbaa8gQI0AMqNflqXUSzz1fFcr15VfhezgL06eXqj+twXExpN+KmTj8+Xr/3dDNMYeLFCewCtHaeECrW+c3l5u1VRW4DtFSJn/2X5Xh/3A3XZspTIEAPKDp3BdsAAAqcSURBVNfkolR++XZ++9fL1duLcvtqUUFvLgsDZQE6u/v9/PbfZ+s/Xq3GfD2bPcwGWbx38Ww1+jpAKxMvTGBz+FQ/TwgV68dHs88X+563ry9X5bUpzGol/vLt7V92h/BtpjwJAvSAUk0uSuXZ6h/rg+7r7Bs4/92bBej6zattZT7cDboe5GZzOLR4tZxaaeKlCWxnUj9PCBVr9up6W3TP6ypxPWruS/zwlCdBgB5QqsltqSxT7d6+ismKcJWYiyJbDrQddHeCdDmNzdSuCnW4mXhpArsAnVyV0k6kWDM3uQDdV4nlL/F2U/6UCdADijW5eLWppHUN3SzPnP9cHiefkfNtZV5Vj/J3014NUp54aQLbMq2fJ4SKdT3oT3/6erYL0L2VuKnBDlP+1AnQA4o1+fHRbGdZSlerazwPvi+MUxeg1aOr58upbepwNUh54nsCtH6eECrW+fzNk80wWYDurcRNDbad8gQI0AMO1OTq1qRl8TzLjbMnQB+WB9kF6LvLDgFaO08IFesm/H7x7esjAnS6JSlAD6jU5MPKEH9YfYPnbj/uvge6DdDCxPcGaN08IVSs17PZes/xphCg9ZW4C9AWU54EAXpA5bRS7Y0ar7PLlEuN50DXk9hzDrQw8YYArc4TIsW6G+i6cA60vhJ350BbfAwmQYAeUKqVq0KI5asv935tgG6HWH97ly52Xm0ytuZ+/HkpQPfMEyLFmu1MLv68uwq/rxK3o7b6GEyCAD2geuid35HMCubq4B5o3X2g2/d294FW9lJ3E6jcxnQ1ua97mgWKNRvlZla8D7S2EnP3gR7+GEyCAD2gfLRytX40/afHq3JbfH/f/X4x0KuD50C3Tx29viw+ibR8oCN7Eqk48fIENv+rnyeEinVdgrevNicwd4VZV4lZrzdtpjwJAvSA7RPs29s8brcPAV+sSiV7kPir3Dj1AVr3LPzmvYvNs/DFiZcnsHygbpm+tfOEULFur6jf/R+Xu3NL+yoxq8E2U54EAXpAuSY3t83d+Wpz3/D7l5eVO+DqA3R9r8edZ7lBNu/lemPKT7wygcXe62r3tW6eECrWRRZerjpSKh2t11birgbbTHkKBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQJAABQgSoABBAhQgSIACBAlQgCABChAkQAGCBChAkAAFCBKgAEECFCBIgAIECVCAIAEKECRAAYIEKECQAAUIEqAAQQIUIEiAAgQJUIAgAQoQJEABggQoQND/B2RIX8AicEW7AAAAAElFTkSuQmCC" width="672" /></p>
+</div>
 </div>
 
 
