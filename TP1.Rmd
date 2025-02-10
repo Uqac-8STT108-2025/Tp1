@@ -13,6 +13,65 @@ output: html_document
   
   1.1 Description des variables ;
   
+  Le jeu de données contient 1 048 573 observations et 46 variables.
+Les variables sont réparties en 31 numériques et 15 catégorielles. L’objectif de cette base est de détecter des anomalies et prédire des attaques informatiques en fonctions de ces variables.
+
+
+```{r}
+df<- read.csv("../data/GUIDE_Train.csv")
+nrow(df)
+ncol(df)
+```
+
+```{r}
+df<- read.csv("../data/GUIDE_Train.csv")
+
+#Comptons le nombre de valeurs numériques
+
+nombre_valeurs_numeriques <- sum(sapply(df, is.numeric))
+print(nombre_valeurs_numeriques)
+```
+
+```{r}
+#Comptons le nombre de valeurs catégorielles
+
+nombre_valeurs_categorielles <- sum(sapply(df, is.factor)) + sum(sapply(df, is.character))
+print(nombre_valeurs_categorielles)
+```
+
+###Variables cibles
+
+Ces variables vont  nous aider pour identifier les menaces et classifier les incidents
+
+-IncidentGrade : La gravité de l'incident.
+-MitreTechniques : Les techniques d'attaque basées sur la matrice MITRE ATT&CK.
+-AlertTitle : Titre de l’alerte  cyberattaque.
+-ThreatFamily : Famille de la menace détectée
+-ActionGranular : Actions détaillées de l'incident.
+
+###Variables explicatives
+
+Ces variables vont être utilisées pour prédire les anomalies et détecter des attaques
+
+-Sha256 : Hash du fichier analysé
+-Timestamp : La date et heure de l’incident.
+-IpAddress : Adresse IP impliquée.
+-DeviceId : Identifiant de l’appareil impacté.
+-RegistryValueData : La valeur du registre Windows modifiée.
+-FileName : Nom du fichier impacté.
+-FolderPath : Chemin du fichier dans le système.
+-ApplicationId : Identifiant unique de l’application impliquée.
+-OSVersion : Version du système d’exploitation.
+-Category : Catégorie de l’incident.
+-EntityType : Type d’entité affectée( Ex:fichier).
+-EvidenceRole : Rôle et la preuve évidente de l’incident.
+-ApplicationName : Nom de l’application impliquée dans l’incident.
+-OSFamily : Famille du système d’exploitation (ex : "Windows").
+-ActionGrouped : L'impact des actions regroupées liées à l’incident.
+-SuspicionLeve: Le niveau de suspicion attribué à l'incident détecté
+-Usage:le mode d'utilisation du système
+
+  
   1.2 calcul des statistiques 
   
   1.3 gestion des valeurs manquantes ;

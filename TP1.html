@@ -364,6 +364,50 @@ display: none;
 </ol>
 <p>1.1 importation et source des données (À propos de l’auteur) ;</p>
 <p>1.1 Description des variables ;</p>
+<p>Le jeu de données contient 1 048 573 observations et 46 variables.
+Les variables sont réparties en 31 numériques et 15 catégorielles.
+L’objectif de cette base est de détecter des anomalies et prédire des
+attaques informatiques en fonctions de ces variables.</p>
+<pre class="r"><code>df&lt;- read.csv(&quot;../data/GUIDE_Train.csv&quot;)
+nrow(df)</code></pre>
+<pre><code>## [1] 1048575</code></pre>
+<pre class="r"><code>ncol(df)</code></pre>
+<pre><code>## [1] 46</code></pre>
+<pre class="r"><code>df&lt;- read.csv(&quot;../data/GUIDE_Train.csv&quot;)
+
+#Comptons le nombre de valeurs numériques
+
+nombre_valeurs_numeriques &lt;- sum(sapply(df, is.numeric))
+print(nombre_valeurs_numeriques)</code></pre>
+<pre><code>## [1] 31</code></pre>
+<pre class="r"><code>#Comptons le nombre de valeurs catégorielles
+
+nombre_valeurs_categorielles &lt;- sum(sapply(df, is.factor)) + sum(sapply(df, is.character))
+print(nombre_valeurs_categorielles)</code></pre>
+<pre><code>## [1] 15</code></pre>
+<p>###Variables cibles</p>
+<p>Ces variables vont nous aider pour identifier les menaces et
+classifier les incidents</p>
+<p>-IncidentGrade : La gravité de l’incident. -MitreTechniques : Les
+techniques d’attaque basées sur la matrice MITRE ATT&amp;CK. -AlertTitle
+: Titre de l’alerte cyberattaque. -ThreatFamily : Famille de la menace
+détectée -ActionGranular : Actions détaillées de l’incident.</p>
+<p>###Variables explicatives</p>
+<p>Ces variables vont être utilisées pour prédire les anomalies et
+détecter des attaques</p>
+<p>-Sha256 : Hash du fichier analysé -Timestamp : La date et heure de
+l’incident. -IpAddress : Adresse IP impliquée. -DeviceId : Identifiant
+de l’appareil impacté. -RegistryValueData : La valeur du registre
+Windows modifiée. -FileName : Nom du fichier impacté. -FolderPath :
+Chemin du fichier dans le système. -ApplicationId : Identifiant unique
+de l’application impliquée. -OSVersion : Version du système
+d’exploitation. -Category : Catégorie de l’incident. -EntityType : Type
+d’entité affectée( Ex:fichier). -EvidenceRole : Rôle et la preuve
+évidente de l’incident. -ApplicationName : Nom de l’application
+impliquée dans l’incident. -OSFamily : Famille du système d’exploitation
+(ex : “Windows”). -ActionGrouped : L’impact des actions regroupées liées
+à l’incident. -SuspicionLeve: Le niveau de suspicion attribué à
+l’incident détecté -Usage:le mode d’utilisation du système</p>
 <p>1.2 calcul des statistiques</p>
 <p>1.3 gestion des valeurs manquantes ;</p>
 <ol start="2" style="list-style-type: decimal">
