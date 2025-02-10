@@ -1,5 +1,6 @@
 library(tidyverse)
 
+
 plot_distribution <- function(data, variable, title = "Distribution d'une série ",couleur="grey")
   
   #Création du graphique

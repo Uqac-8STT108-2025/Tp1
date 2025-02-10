@@ -35,51 +35,75 @@ output: html_document
 
 ```{r library, include=FALSE}
 library("tidyverse")
+library("dplyr")
 ```
 
 
-```{r importation-du-dataset}
-df<- read.csv("../data/GUIDE_Train.csv")
+On charge les fichiers necessaires
+
+```{r importation-outliers}
+source("outliers.R")
+#file.exists("outliers.R")
+```
+
+```{r plot_distribution}
+source("plot_distribution.R")
+#file.exists("plot_distribution.R")
+```
+
+
+
+
+#```{r importation-du-dataset}
+#df<- read.csv("../data/GUIDE_Train.csv")
+#head(df)
+#View(df)
+#```
+Afin de faciliter notre manipulation des données nous avons réécrit la base de donnée, cette fois en selectionnant
+uniquement les 25000 premieres lignes. (Le code est commanté expressement, pour ne pas etre réexécuté)
+
+
+#```{r ecriture-de-la-base-donnee}
+#library(readr)
+#df_subset <- df[1:25000, ]
+#write_csv(df_subset, "data_subset.csv")
+#```
+
+
+```{r importation-du-dataset-de travail}
+df<- read.csv("data_subset.csv")
 head(df)
-
-```
-Afin de faciliter notre manipulation des données nous allons procéder à une reduction de la taille de l'échantillon
-d'entrainement. Nous travaillerons sur un échantillon dont la taille sera 10% de celle de l'original.
-```{r reduction de la taille}
-library(dplyr)
-set.seed(42)
-df_sample_10 <- df %>% sample_frac(0.1)  # Prend 10% des données
-
+#View(df)
 ```
 
 
 
 
 ```{r les-variables}
-colnames(df_sample_10)
+colnames(df)
 ```
 
 Le jeu de donnees a **`r ncol(df)`** variables et **`r nrow(df)`**
 
 ```{r types-des-variables}
-glimpse(df_sample_10)
-View(df_sample_10)
+glimpse(df)
+View(df)
 ```
 ```{r statistiques}
-summary(df_sample_10)
+summary(df)
 ```
 
 
 ```{r recherche valeurs manquantes}
 #recherche de valeur manquante
-colSums(is.na(df_sample_10))
+colSums(is.na(df))
 
 #traitement des valeurs manquantes dans la colonne EmailClusterId
 #nombre de valeurs manquantes dans la colonne
-nb_valeurs_manquant_EmailClusterId = sum(is.na(df_sample_10[,"EmailClusterId"]))
-ratio = nb_valeurs_manquant_EmailClusterId/nrow(df_sample_10)
+nb_valeurs_manquant_EmailClusterId = sum(is.na(df[,"EmailClusterId"]))
+ratio = nb_valeurs_manquant_EmailClusterId/nrow(df)
 ratio
-df_sample_10_clean = df_sample_10[,colSums(is.na(df_sample_10))==0]
+df_clean = df[,colSums(is.na(df))==0]
 
 ```
 On a `r ratio` valeur manquantes dans la colonne EmailClusterId. Nous décidons donc de la supprimer.
@@ -88,21 +112,20 @@ On a `r ratio` valeur manquantes dans la colonne EmailClusterId. Nous décidons 
 ```{r visualisation}
 #Les histogrammes de variables quantitatives 
 #Les organisations enregistrés 
-hist(df_sample_10$OrgId, breaks=15,col="red", main="Histogramme des organisations",
+hist(df$OrgId, breaks=15,col="red", main="Histogramme des organisations",
      xlab="Les organisations"
      )
 
 #Les incidents et les alertes 
 par(mfrow=c(2,2))
 
-hist(df_sample_10$IncidentId, breaks=15,col="red",main="Histogramme des incidents", 
+hist(df$IncidentId, breaks=15,col="red",main="Histogramme des incidents", 
      xlab="Les incidents"
      )
 
-hist(df_sample_10$AlertId,breaks=15,col="red",main="Histogramme des alertes",
+hist(df$AlertId,breaks=15,col="red",main="Histogramme des alertes",
      xlab="Les alertes"
      )
 #Les boxplots 
-
 
 ```
