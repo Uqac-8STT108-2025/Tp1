@@ -58,9 +58,9 @@ Donc nous allons préter une attention particulière à la colinéarité entre l
     
     1.2 Description des variables ;
     
-      * Variable cible,
+      * Variable cible ;
       
-      * Variables explicatives
+      * Variables explicatives ;
       
     1.3 calcul des statistiques ;
     
