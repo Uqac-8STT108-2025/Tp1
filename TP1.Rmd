@@ -5,13 +5,20 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-## Méthodologie : 
+## 1. Méthodologie : 
 
-1. A propos des donnees
+### 1. A propos des donnees
 
-  1.1 importation et source des données (À propos de l'auteur) ;
+####  1.1 importation et source des données (À propos de l'auteur) ;
+
+Dans le cadre du developpement de Copilot for Security Guided Response (CGR) la compagnie Microsoft a mis sur pied la base de données GUIDE qui est la plus large collection publique d'incidents réels de sécurité. Selon l'article AI-Driven Guided Response for Security Operation Centers with Microsoft Copilot for Security de Scott Freitas, Jovan Kalajdjieski, Amir Gharib, Robert McCann cette base de données aidera essentiellement à:  
+- l’enquête, en fournissant un contexte historique essentiel en identifiant des incidents similaires ;
+- effectuer un triage pour déterminer la nature de l’incident -- s’il s’agit d’un vrai positif, d’un faux positif ou d’un positif bénin ; 
+- l’assainissement, en recommandant des mesures de confinement adaptées.
+Cette base de données est accessible en libre téléchargement via kagle(https://www.kaggle.com/datasets/Microsoft/microsoft-security-incident-prediction?select=GUIDE_Train.csv).
+
   
-  1.1 Description des variables ;
+####  1.2 Description des variables ;
   
   Le jeu de données contient 1 048 573 observations et 46 variables.
 Les variables sont réparties en 31 numériques et 15 catégorielles. L’objectif de cette base est de détecter des anomalies et prédire des attaques informatiques en fonctions de ces variables.
@@ -24,7 +31,7 @@ ncol(df)
 ```
 
 ```{r}
-df<- read.csv("../data/GUIDE_Train.csv")
+#df<- read.csv("../data/GUIDE_Train.csv")
 
 #Comptons le nombre de valeurs numériques
 
@@ -72,12 +79,12 @@ Ces variables vont être utilisées pour prédire les anomalies et détecter des
 -Usage:le mode d'utilisation du système
 
   
-  1.2 calcul des statistiques 
+####  1.3 calcul des statistiques 
   
-  1.3 gestion des valeurs manquantes ;
+####  1.4 gestion des valeurs manquantes ;
   
   
-2. Visualisations : 
+## 2. Visualisations : 
 
  
   2.1 Les histogrammes pour les variables catégorielles ;
@@ -87,7 +94,7 @@ Ces variables vont être utilisées pour prédire les anomalies et détecter des
   2.3 gestion des valeurs abérantes ;
   
   
-3. Regression logistique
+## 3. Regression logistique
 
 
   
