@@ -116,6 +116,26 @@ ggplot(data=df, mapping=aes(y=Category, fill=IncidentGrade)) +#y=after_stat(dens
   scale_x_discrete()+
   theme_minimal()
 
+ggplot(data=df, mapping=aes(x=Id, fill=IncidentGrade)) +#y=after_stat(density)),
+  geom_histogram()+
+  ggtitle("Représentation des IncidentGrade pour chacun des Id")
+  theme_minimal()
+  
+ggplot(data=df, mapping=aes(x=Id, color=IncidentGrade)) +#y=after_stat(density)),
+  geom_freqpoly()+
+  ggtitle("Représentation des IncidentGrade pour chacun des Id")
+  theme_minimal()
+
+ggplot(data=df, mapping=aes(y=Category, fill=IncidentGrade)) +#y=after_stat(density)),
+  geom_bar(position = "fill")+
+  ggtitle("Répartition des IndentGrade pour chacune des catégories") + 
+  theme_minimal()+
+  theme(
+    legend.position = "top",
+  )+
+  scale_x_discrete()+
+  theme_minimal()
+
 
 
 ```
