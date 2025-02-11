@@ -43,15 +43,10 @@ On charge les fichiers necessaires
 
 ```{r importation-outliers}
 source("outliers.R")
-#file.exists("outliers.R")
-```
-
-```{r plot_distribution}
 source("plot_distribution.R")
 #file.exists("plot_distribution.R")
+#file.exists("outliers.R")
 ```
-
-
 
 
 #```{r importation-du-dataset}
@@ -59,6 +54,7 @@ source("plot_distribution.R")
 #head(df)
 #View(df)
 #```
+
 Afin de faciliter notre manipulation des données nous avons réécrit la base de donnée, cette fois en selectionnant
 uniquement les 25000 premieres lignes. (Le code est commanté expressement, pour ne pas etre réexécuté)
 
@@ -70,7 +66,7 @@ uniquement les 25000 premieres lignes. (Le code est commanté expressement, pour
 #```
 
 
-```{r importation-du-dataset-de travail}
+```{r importation-du-dataset-de-travail}
 df<- read.csv("data_subset.csv")
 head(df)
 #View(df)
@@ -83,7 +79,7 @@ head(df)
 colnames(df)
 ```
 
-Le jeu de donnees a **`r ncol(df)`** variables et **`r nrow(df)`**
+Le jeu de donnees a **`r ncol(df)`** variables et **`r nrow(df)`** observations
 
 ```{r types-des-variables}
 glimpse(df)

@@ -378,7 +378,6 @@ display: none;
 <p>On charge les fichiers necessaires</p>
 <pre class="r"><code>source(&quot;outliers.R&quot;)</code></pre>
 <pre><code>## [1] &quot;valeurs extremes : &quot;</code></pre>
-<pre class="r"><code>#file.exists(&quot;outliers.R&quot;)</code></pre>
 <pre class="r"><code>source(&quot;plot_distribution.R&quot;)</code></pre>
 <pre><code>## Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
 ## ℹ Please use tidy evaluation idioms with `aes()`.
@@ -391,10 +390,11 @@ display: none;
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 ## generated.</code></pre>
-<pre class="r"><code>#file.exists(&quot;plot_distribution.R&quot;)</code></pre>
-<p>#<code>{r importation-du-dataset} #df&lt;- read.csv(&quot;../data/GUIDE_Train.csv&quot;) #head(df) #View(df) #</code>
-Afin de faciliter notre manipulation des données nous avons réécrit la
-base de donnée, cette fois en selectionnant uniquement les 25000
+<pre class="r"><code>#file.exists(&quot;plot_distribution.R&quot;)
+#file.exists(&quot;outliers.R&quot;)</code></pre>
+<p>#<code>{r importation-du-dataset} #df&lt;- read.csv(&quot;../data/GUIDE_Train.csv&quot;) #head(df) #View(df) #</code></p>
+<p>Afin de faciliter notre manipulation des données nous avons réécrit
+la base de donnée, cette fois en selectionnant uniquement les 25000
 premieres lignes. (Le code est commanté expressement, pour ne pas etre
 réexécuté)</p>
 <p>#<code>{r ecriture-de-la-base-donnee} #library(readr) #df_subset &lt;- df[1:25000, ] #write_csv(df_subset, &quot;data_subset.csv&quot;) #</code></p>
@@ -482,7 +482,7 @@ head(df)</code></pre>
 ## [43] &quot;CountryCode&quot;        &quot;State&quot;              &quot;City&quot;              
 ## [46] &quot;Usage&quot;</code></pre>
 <p>Le jeu de donnees a <strong>46</strong> variables et
-<strong>25000</strong></p>
+<strong>25000</strong> observations</p>
 <pre class="r"><code>glimpse(df)</code></pre>
 <pre><code>## Rows: 25,000
 ## Columns: 46
