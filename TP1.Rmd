@@ -10,17 +10,12 @@ library(tidyverse)
 library(dplyr)
 library(knitr)
 ```
-
-
-On charge les fichiers necessaires
-
-```{r importation-outliers}
+```{r importation-des-fonctions}
 source("outliers.R")
 source("plot_distribution.R")
-#file.exists("plot_distribution.R")
 #file.exists("outliers.R")
+#file.exists("plot_distribution.R")
 ```
-
 
 ## Introduction : 
 
@@ -44,9 +39,9 @@ Construire un modèle de machine learning capable de prédire IncidentGrade à p
 
 **Problème rencontré :** La base de donnée fournie a **4147992** observations et 46 variables, soit 45 potentielles variables explicatives. Ceci a soulevé deux problèmes majeurs dans e cadre de notre travail :
 
-Problème1 : Le fichier est trop lourd ; il pèse plus d'un GigaOctet, ce qui ralentit les algorithmes de Machine learning, puisque nous n'avons pas accès aux super-calculateurs. Pour contourner cet obstacle, nous avons selectionné un échantillon de 25 000 observations que nous avons renommé df. Tous notre travail est basé sur cette nouvelle database.
+**Problème1** : Le fichier est trop lourd ; il pèse plus d'un GigaOctet, ce qui ralentit les algorithmes de Machine learning, puisque nous n'avons pas accès aux super-calculateurs. Pour contourner cet obstacle, nous avons selectionné un échantillon de 25 000 observations que nous avons renommé df. Tous notre travail est basé sur cette nouvelle database.
 
-Problème2 : En présence d'autant de variables cibles et d'autant d'observations, il y a un risque de surapprentissage.
+**Problème2** : En présence d'autant de variables cibles et d'autant d'observations, il y a un risque de surapprentissage.
 Donc nous allons préter une attention particulière à la colinéarité entre les différentes variables. Et via une analyse par composantes principales, on pourra selectionner les prédicteurs les plus pertinents.
 
 
@@ -276,6 +271,7 @@ hist(df$AlertId,breaks=15,col="red",main="Histogramme des alertes",
 ```{r valeurs-aberantes,include=FALSE}
   outliers(df)
 ```
+
 Il n'y a pas de valeurs abérantes dans le jeu de données.
 
 ##### **Supression des colonnes non pertinentes pour l'étude** 
@@ -294,7 +290,7 @@ for (col in colonnes_non_pertinentes){
 ```
   
   
-## 3. Regression logistique
+###3. Regression logistique
 
 
 

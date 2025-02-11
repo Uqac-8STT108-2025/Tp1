@@ -357,7 +357,6 @@ display: none;
 </div>
 
 
-<p>On charge les fichiers necessaires</p>
 <pre class="r"><code>source(&quot;outliers.R&quot;)</code></pre>
 <pre><code>## [1] &quot;valeurs extremes : &quot;</code></pre>
 <pre class="r"><code>source(&quot;plot_distribution.R&quot;)</code></pre>
@@ -372,8 +371,8 @@ display: none;
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 ## generated.</code></pre>
-<pre class="r"><code>#file.exists(&quot;plot_distribution.R&quot;)
-#file.exists(&quot;outliers.R&quot;)</code></pre>
+<pre class="r"><code>#file.exists(&quot;outliers.R&quot;)
+#file.exists(&quot;plot_distribution.R&quot;)</code></pre>
 <div id="introduction" class="section level2">
 <h2>Introduction :</h2>
 <p>Dans un contexte où les menaces informatiques se multiplient et
@@ -407,17 +406,17 @@ l’optimisation des décisions dans un SOC.</p>
 <strong>4147992</strong> observations et 46 variables, soit 45
 potentielles variables explicatives. Ceci a soulevé deux problèmes
 majeurs dans e cadre de notre travail :</p>
-<p>Problème1 : Le fichier est trop lourd ; il pèse plus d’un GigaOctet,
-ce qui ralentit les algorithmes de Machine learning, puisque nous
-n’avons pas accès aux super-calculateurs. Pour contourner cet obstacle,
-nous avons selectionné un échantillon de 25 000 observations que nous
-avons renommé df. Tous notre travail est basé sur cette nouvelle
-database.</p>
-<p>Problème2 : En présence d’autant de variables cibles et d’autant
-d’observations, il y a un risque de surapprentissage. Donc nous allons
-préter une attention particulière à la colinéarité entre les différentes
-variables. Et via une analyse par composantes principales, on pourra
-selectionner les prédicteurs les plus pertinents.</p>
+<p><strong>Problème1</strong> : Le fichier est trop lourd ; il pèse plus
+d’un GigaOctet, ce qui ralentit les algorithmes de Machine learning,
+puisque nous n’avons pas accès aux super-calculateurs. Pour contourner
+cet obstacle, nous avons selectionné un échantillon de 25 000
+observations que nous avons renommé df. Tous notre travail est basé sur
+cette nouvelle database.</p>
+<p><strong>Problème2</strong> : En présence d’autant de variables cibles
+et d’autant d’observations, il y a un risque de surapprentissage. Donc
+nous allons préter une attention particulière à la colinéarité entre les
+différentes variables. Et via une analyse par composantes principales,
+on pourra selectionner les prédicteurs les plus pertinents.</p>
 <div id="méthodologie" class="section level3">
 <h3>1. Méthodologie :</h3>
 <ol style="list-style-type: decimal">
@@ -1071,11 +1070,9 @@ hist(df$AlertId,breaks=15,col=&quot;red&quot;,main=&quot;Histogramme des alertes
 <div id="supression-des-colonnes-non-pertinentes-pour-létude" class="section level5">
 <h5><strong>Supression des colonnes non pertinentes pour
 l’étude</strong></h5>
+<p>###3. Regression logistique</p>
 </div>
 </div>
-</div>
-<div id="regression-logistique" class="section level2">
-<h2>3. Regression logistique</h2>
 </div>
 
 
