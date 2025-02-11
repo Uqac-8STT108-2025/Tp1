@@ -5,245 +5,253 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r importation-des-librairies,include=FALSE}
-library(tidyverse)
-library(dplyr)
-library(knitr)
-```
-```{r importation-des-fonctions}
-source("outliers.R")
-source("plot_distribution.R")
-#file.exists("outliers.R")
-#file.exists("plot_distribution.R")
-```
-
-## Introduction : 
-
-Dans un contexte où les menaces informatiques se multiplient et évoluent rapidement, les centres d’opérations de sécurité (SOC) doivent être en mesure de détecter, classifier et répondre efficacement aux incidents de cybersécurité. Pour améliorer ces processus, Microsoft a développé la base de données GUIDE, qui constitue la plus grande collection publique d'incidents réels de sécurité. Cette base de données a été mise en place dans le cadre du développement du Copilot for Security Guided Response (CGR) et a pour objectif principal d’améliorer l’enquête, le triage et l’assainissement des incidents de sécurité.
-
-Dans cette étude, nous nous intéressons à la prédiction de la variable **IncidentGrade**, qui classifie les incidents en trois catégories principales :
-
-True Positive (TP) : Incidents avérés nécessitant une intervention.
-
-False Positive (FP) : Alertes erronées qui ne représentent pas de menace réelle.
-
-Benign Positive (BP) : Incidents détectés mais non critiques.
-
-L’objectif de ce travail est de développer un modèle de classification permettant d’automatiser l’évaluation des incidents à partir des données fournies par GUIDE. Cette analyse vise à :
-
-Explorer les caractéristiques des incidents à travers les différentes variables disponibles (ex. catégorie d’alerte, techniques MITRE associées, entité impactée).
-
-Construire un modèle de machine learning capable de prédire IncidentGrade à partir des informations contextuelles.
-
-Évaluer la performance du modèle et son impact potentiel sur l’optimisation des décisions dans un SOC.
-
-**Problème rencontré :** La base de donnée fournie a **4147992** observations et 46 variables, soit 45 potentielles variables explicatives. Ceci a soulevé deux problèmes majeurs dans e cadre de notre travail :
-
-**Problème1** : Le fichier est trop lourd ; il pèse plus d'un GigaOctet, ce qui ralentit les algorithmes de Machine learning, puisque nous n'avons pas accès aux super-calculateurs. Pour contourner cet obstacle, nous avons selectionné un échantillon de 25 000 observations que nous avons renommé df. Tous notre travail est basé sur cette nouvelle database.
-
-**Problème2** : En présence d'autant de variables cibles et d'autant d'observations, il y a un risque de surapprentissage.
-Donc nous allons préter une attention particulière à la colinéarité entre les différentes variables. Et via une analyse par composantes principales, on pourra selectionner les prédicteurs les plus pertinents.
-
-
-### 1. Méthodologie : 
-
-1. A propos des donnees :
-
-    1.1 importation et source des données (À propos de l'auteur) ;
-    
-    1.2 Description des variables ;
-    
-      * Variable cible ;
-      
-      * Variables explicatives ;
-      
-    1.3 calcul des statistiques ;
-    
-    1.4 gestion des valeurs manquantes ;
-    
-2. Visualisations :
-
-    2.1 Les histogrammes pour les variables catégorielles ;
-    
-    2.2 Les diagrammes en boites pour les variables numériques ;
-    
-    2.3 gestion des valeurs abérantes ;
-    
-3. Regression logistique
-    
+## 1. Méthodologie : 
 
 ### 1. A propos des donnees
 
 ####  1.1 importation et source des données (À propos de l'auteur) ;
 
+Dans le cadre du developpement de Copilot for Security Guided Response (CGR) la compagnie Microsoft a mis sur pied la base de données GUIDE qui est la plus large collection publique d'incidents réels de sécurité. Selon l'article AI-Driven Guided Response for Security Operation Centers with Microsoft Copilot for Security de Scott Freitas, Jovan Kalajdjieski, Amir Gharib, Robert McCann cette base de données aidera essentiellement à:  
+- l’enquête, en fournissant un contexte historique essentiel en identifiant des incidents similaires ;
+- effectuer un triage pour déterminer la nature de l’incident -- s’il s’agit d’un vrai positif(TP), d’un faux positif(FP) ou d’un positif bénin(BP) ; 
+- l’assainissement, en recommandant des mesures de confinement adaptées.
 Cette base de données est accessible en libre téléchargement via kagle(https://www.kaggle.com/datasets/Microsoft/microsoft-security-incident-prediction?select=GUIDE_Train.csv).
-Les auteurs sont : 
-
-Microsoft (Propriétaire)
-
-Scott Freitas (Administrateur)
-
-
-amirh gharib (Editeur)
-
-Rob McCann (Editeur)
-
-Jovan Kalajdjieski (Editeur).
-
-cette base englobe plus de 13 millions d'éléments de preuve sur 33 types d'entités, dont 1,6 million d'alertes et 1 million d'incidents annotés avec des étiquettes de triage provenant de clients sur une période de deux semaines. Cette télémétrie a été collectée auprès des clients Microsoft Defender XDR, englobant divers produits tels que des terminaux, des périphériques réseau, des environnements cloud, des systèmes de messagerie, etc.
-(pris dans le site de l'auteur)
-
 
   
-####  1.2 Description des variables :
+####  1.2 Description des variables ;
+  
+  Le jeu de données contient 1 048 573 observations et 46 variables.
+Les variables sont réparties en 31 numériques et 15 catégorielles. 
+L’objectif de cette base est de détecter des anomalies et prédire des attaques informatiques en fonctions de ces variables.
 
-```{r importation-dataset-original, include=FALSE}
+
+```{r}
+df<- read.csv("data_subset.csv")
+nrow(df)
+ncol(df)
+```
+
+```{r}
 #df<- read.csv("../data/GUIDE_Train.csv")
 
 #Comptons le nombre de valeurs numériques
 
-#nombre_valeurs_numeriques <- sum(sapply(df, is.numeric))
-#print(nombre_valeurs_numeriques)
+nombre_valeurs_numeriques <- sum(sapply(df, is.numeric))
+print(nombre_valeurs_numeriques)
 ```
 
-
-```{r importation-du-dataset-de-travail,include=FALSE}
-df<- read.csv("data_subset.csv")
-head(df,10)
-```
-```{r les-variables}
-glimpse(df)
-```
-  
-  Le jeu de données utilisé contient **`r nrow(df)`** observations et **`r ncol(df)`** variables.
- 
-```{r valeurs categorielles, include=FALSE}
+```{r}
 #Comptons le nombre de valeurs catégorielles
 
 nombre_valeurs_categorielles <- sum(sapply(df, is.factor)) + sum(sapply(df, is.character))
 print(nombre_valeurs_categorielles)
 ```
 
-Les variables sont réparties en 31 numériques et 15 catégorielles.
+###Variables cibles
 
+Ces variables vont nous aider pour identifier les menaces et classifier les incidents
 
-##### **La Variable cible** : IncidentGrade : (La gravité de l'incident).
+-IncidentGrade : La gravité de l'incident.
 
-  Cette variables va nous aider à identifier la gravité des différents incidents.
+-MitreTechniques : Les techniques d'attaque basées sur la matrice MITRE ATT&CK. (A exclure trop de données absentes) 
+-AlertTitle : Titre de l’alerte  cyberattaque.
+-ThreatFamily : Famille de la menace détectée (A exclure trop de données absentes)
+-ActionGranular : Actions détaillées de l'incident.
 
-
-##### **Variables explicatives potentielles** :
-
-*Sha256* : Hash du fichier analysé
-
-*Timestamp* : La date et heure de l’incident.
-
-*IpAddress* : Adresse IP impliquée.
-
-*DeviceId* : Identifiant de l’appareil impacté.
-
-*RegistryValueData* : La valeur du registre Windows modifiée.
-
-*FileName* : Nom du fichier impacté.
-
-*FolderPath* : Chemin du fichier dans le système.
-
-*ApplicationId* : Identifiant unique de l’application impliquée.
-
-*OSVersion* : Version du système d’exploitation.
-
-*Category* : Catégorie de l’incident.
-
-*EntityType* : Type d’entité affectée( Ex:fichier).
-
-*EvidenceRole* : Rôle et la preuve évidente de l’incident.
-
-*ApplicationName* : Nom de l’application impliquée dans l’incident.
-
-*OSFamily* : Famille du système d’exploitation (ex : "Windows").
-
-*ActionGrouped* : L'impact des actions regroupées liées à l’incident.
-
-*SuspicionLeve*: Le niveau de suspicion attribué à l'incident détecté
-
-*Usage*:le mode d'utilisation du système
-
-*MitreTechniques* : Les techniques d'attaque basées sur la matrice MITRE ATT&CK. 
-
-*AlertTitle* : Titre de l’alerte  cyberattaque.
-
-*ThreatFamily* : Famille de la menace détectée (A exclure trop de données absentes)
-
-*ActionGranular* : Actions détaillées de l'incident.
-
-* (À continuer)
+###Variables explicatives
 
 Ces variables vont être utilisées pour prédire les anomalies et détecter des attaques
+
+-Sha256 : Hash du fichier analysé
+-Timestamp : La date et heure de l’incident.
+-IpAddress : Adresse IP impliquée.
+-DeviceId : Identifiant de l’appareil impacté.
+-RegistryValueData : La valeur du registre Windows modifiée.
+-FileName : Nom du fichier impacté.
+-FolderPath : Chemin du fichier dans le système.
+-ApplicationId : Identifiant unique de l’application impliquée.
+-OSVersion : Version du système d’exploitation.
+-Category : Catégorie de l’incident.
+-EntityType : Type d’entité affectée( Ex:fichier).
+-EvidenceRole : Rôle et la preuve évidente de l’incident.
+-ApplicationName : Nom de l’application impliquée dans l’incident.
+-OSFamily : Famille du système d’exploitation (ex : "Windows").
+-ActionGrouped : L'impact des actions regroupées liées à l’incident.
+-SuspicionLeve: Le niveau de suspicion attribué à l'incident détecté
+-Usage:le mode d'utilisation du système
+
   
 ####  1.3 calcul des statistiques 
-
-```{r les-statistiques}
-summary(df) %>%
-  kable()
+```{r importation-du-dataset-de travail}
+df<- read.csv("data_subset.csv")
+summary(df)
 ```
-
   
-####  1.4 gestion des valeurs manquantes :
-
-```{r valeurs-manquantes,include=FALSE}
-#Il y a beaucoup de colonnes, on va faire la gestion de façon récursive
-for (colonne in colnames(df)) {
-  pourcentage_na <- sum(is.na(df[[colonne]])) / nrow(df) * 100
-  cat(colonne, ":",pourcentage_na,"% de valeurs manquantes; \t" )
-  if (pourcentage_na >0.5){
-    df[[colonne]] <- NULL
-  }
-}
-if (sum(is.na(df))==0){
-  print("La base de donnee est nettoyée, il n'y a plus de valeurs manquantes dans aucune variable")
-}
-```
-
+####  1.4 gestion des valeurs manquantes ;
+  
   
 ## 2. Visualisations : 
 
  
-####  2.1 Les histogrammes pour les variables catégorielles ;
+###  2.1 Les histogrammes pour les variables catégorielles ;
+```{r}
+library(ggplot2)
+ggplot(data=df, mapping=aes(x=Id, fill=IncidentGrade)) +#y=after_stat(density)),
+  geom_histogram()+
+  ggtitle("Représentation des IncidentGrade pour chacun des Id")
+  theme_minimal()
+  
+ggplot(data=df, mapping=aes(x=Id, color=IncidentGrade)) +#y=after_stat(density)),
+  geom_freqpoly()+
+  ggtitle("Représentation des IncidentGrade pour chacun des Id")
+  theme_minimal()
 
-```{r  barPlot-SuspicionLevel}
-df <- df %>%
-  mutate(SuspicionLevel = case_when(
-    SuspicionLevel == "Suspicious" ~ "Suspicious",
-    SuspicionLevel == "Incriminated"~ "Incriminated",
-    TRUE ~ "No Suspect"
-  ))
+ggplot(data=df, mapping=aes(y=Category, fill=IncidentGrade)) +#y=after_stat(density)),
+  geom_bar(position = "fill")+
+  ggtitle("Répartition des IndentGrade pour chacune des catégories") + 
+  theme_minimal()+
+  theme(
+    legend.position = "top",
+  )+
+  scale_x_discrete()+
+  theme_minimal()
 
-df_summary <- df %>%
-  count(SuspicionLevel) %>%
-  mutate(percentage = n / sum(n) * 100)
-ggplot(df_summary, aes(x = SuspicionLevel, y = n, fill = SuspicionLevel)) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(label = sprintf("%.1f%%", percentage)), vjust = -0.5) +
-  labs(title = "Distribution de SuspicionLevel",
-       x = "Niveau de suspicion",
-       y = "Fréquence") +
-  scale_fill_viridis_d() +
+
+
+```
+  2.2 Les diagrammes en boites pour les variables numériques ;
+  
+```{r}
+library(ggplot2)
+ggplot(data=df, mapping=aes(x=IncidentGrade,y=count(x))) +#y=after_stat(density)),
+  geom_boxplot()+
+  ggtitle("Représentation des IncidentGrade")
   theme_minimal()
 ```
-#### 2.2 Les diagrammes en boites pour les variables numériques ;(A continuer)
+
+```{r}
+#Classification des incidents en fonction du grade dans les différentes entreprises
+ggplot(df, aes(x=OrgId, y=IncidentId, color=IncidentGrade)) +
+  geom_jitter(alpha=0.3)+
+  ggtitle('Classification des incidents en fonction du grade dans les différentes entreprises')+
+  theme_minimal()+
+  theme(
+    legend.position = "top",
+    axis.line = element_line(linewidth = 0.75)
+  )+
+  scale_x_log10() +
+  scale_y_log10() 
+
+#Classification des incidents en fonction du grade dans les différentes entreprises
+ggplot(df, aes(x=OrgId, y=IncidentId, color=IncidentGrade)) +
+  geom_jitter(alpha=0.3)+
+  ggtitle('Classification des incidents en fonction du grade dans les différentes entreprises')+
+  theme_minimal()+
+  theme(
+    legend.position = "right",
+    axis.line.x  = element_line(linewidth = 0.75)
+  )+
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(~IncidentGrade,nrow=3)+
+  theme(strip.background = element_blank())#+
+  #title("Classification des incidents en fonction du grade dans les différentes entreprises")
+  
+  
+```
+  Nous remarquons l'absence de FP pour les organisations dont le OrgId est inférieur ou égal à 5.
   
 
-```{r  bar-plot-IncidentGrade}
-ggplot(df, aes(x = IncidentGrade,fill = IncidentGrade )) +
-  geom_bar() +
-  labs(title = "Distribution de IncidentGrade",
-       x = "IncidentGrade",
-       y = "Fréquence") +
-   scale_fill_viridis_d()+
-  theme_minimal()
+  
+  
+  2.3 gestion des valeurs abérantes ;
+  
+  
+## 3. Regression logistique
+
+
+  
+
+```{r library, include=FALSE}
+library("tidyverse")
+library("dplyr")
 ```
 
-```{r autre-visualisation}
+
+On charge les fichiers necessaires
+
+```{r importation-outliers}
+source("outliers.R")
+#file.exists("outliers.R")
+```
+
+```{r plot_distribution}
+source("plot_distribution.R")
+#file.exists("plot_distribution.R")
+```
+
+
+
+
+#```{r importation-du-dataset}
+#df<- read.csv("../data/GUIDE_Train.csv")
+#head(df)
+#View(df)
+#```
+Afin de faciliter notre manipulation des données nous avons réécrit la base de donnée, cette fois en selectionnant
+uniquement les 25000 premieres lignes. (Le code est commanté expressement, pour ne pas etre réexécuté)
+
+
+#```{r ecriture-de-la-base-donnee}
+#library(readr)
+#df_subset <- df[1:25000, ]
+#write_csv(df_subset, "data_subset.csv")
+#```
+
+
+```{r importation-du-dataset-de travail}
+df<- read.csv("data_subset.csv")
+head(df)
+#View(df)
+```
+
+
+
+
+```{r les-variables}
+colnames(df)
+```
+
+Le jeu de donnees a **`r ncol(df)`** variables et **`r nrow(df)`**
+
+```{r types-des-variables}
+glimpse(df)
+View(df)
+```
+```{r statistiques}
+summary(df)
+```
+
+
+```{r recherche valeurs manquantes}
+#avant cela if faudra inserrer na pour toutes les valeurs manquantes.
+
+
+#recherche de valeur manquante
+colSums(is.na(df))
+
+#traitement des valeurs manquantes dans la colonne EmailClusterId
+#nombre de valeurs manquantes dans la colonne
+nb_valeurs_manquant_EmailClusterId = sum(is.na(df[,"EmailClusterId"]))
+ratio = nb_valeurs_manquant_EmailClusterId/nrow(df)
+ratio
+df_clean = df[,colSums(is.na(df))==0]
+
+```
+On a `r ratio` valeur manquantes dans la colonne EmailClusterId. Nous décidons donc de la supprimer.
+
+### Visualisation:
+```{r visualisation}
 #Les histogrammes de variables quantitatives 
 #Les organisations enregistrés 
 hist(df$OrgId, breaks=15,col="red", main="Histogramme des organisations",
@@ -263,34 +271,3 @@ hist(df$AlertId,breaks=15,col="red",main="Histogramme des alertes",
 #Les boxplots 
 
 ```
-  
-  
-  
-#### 2.3 gestion des valeurs abérantes :
-  
-```{r valeurs-aberantes,include=FALSE}
-  outliers(df)
-```
-
-Il n'y a pas de valeurs abérantes dans le jeu de données.
-
-##### **Supression des colonnes non pertinentes pour l'étude** 
-
-```{r TBA, include=FALSE}
-colonnes_non_pertinentes = c("Id","IncidentId","AlertId","DeviceId", "Sha256",
-                             "DeviceName","NetworkMessageId", "EmailClusterId",
-                             "ApplicationId","OAuthApplicationId", "ResourceIdName",
-                             "LastVerdict")
-for (col in colonnes_non_pertinentes){
-  df[[col]]<-NULL
-}
-#Ces colonnes sont supprimées sur la base que les id sont uniques et n'apportent pas plus d'information
-# ou bien sur la base de colinearité pour d'autres colonnes.
-
-```
-  
-  
-###3. Regression logistique
-
-
-
