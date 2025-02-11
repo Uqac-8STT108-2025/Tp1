@@ -26,7 +26,7 @@ L’objectif de cette base est de détecter des anomalies et prédire des attaqu
 
 
 ```{r}
-df<- read.csv("../data/GUIDE_Train.csv")
+df<- read.csv("data_subset.csv")
 nrow(df)
 ncol(df)
 ```
@@ -121,7 +121,11 @@ ggplot(data=df, mapping=aes(y=Category, fill=IncidentGrade)) +#y=after_stat(dens
   2.2 Les diagrammes en boites pour les variables numériques ;
   
 ```{r}
-
+library(ggplot2)
+ggplot(data=df, mapping=aes(x=IncidentGrade,y=count(x))) +#y=after_stat(density)),
+  geom_boxplot()+
+  ggtitle("Représentation des IncidentGrade")
+  theme_minimal()
 ```
 
 ```{r}
