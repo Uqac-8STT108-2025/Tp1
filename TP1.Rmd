@@ -348,7 +348,11 @@ ggplot(data = head(techniques_ordone, 10),
   theme_minimal() 
 ```
 **interprétation** : 
+La majorité des alertes sont associées à «Unknown» , ce qui pourrait être un problème de qualité des données.
 
+Les techniques T1078, T1566, et T1133 sont les plus courantes après "Unknown", ce qui suggère que ces méthodes sont des vecteurs d'attaque privilégiés.
+
+Certaines attaques combinent plusieurs techniques , ce qui signifie qu'un modèle de détection efficace doit prendre en compte les relations entre ces différentes méthodes .
 
 ```{r incident-Grade-visualisation}
 IncidentGrade_count <- df_train %>%
@@ -390,31 +394,107 @@ ggplot(top_5_categories, aes(x = "", y = Count, fill = fct_reorder(Category, -Co
   scale_fill_viridis_d() 
 
 ```
-```{r IncidentGrade-fill-selon-IncidentGrade}
 
+**interpretation** 
+*Initial Access*est la catégorie la plus fréquente Cela signifie que la majorité des alertes concernent des tentatives d'accès initiales (ex. hameçonnage, exploitation de vulnérabilités).
+
+*Exfiltration*arrive en deuxième position Cela correspond aux tentatives de vol de données en dehors du réseau cible ce qui indique aussi que des attaquants ont réussi à pénétrer les systèmes et tenter d'exfiltrer des informations sensibles.
+
+*SuspiciousActivity* Comportements suspects qui ne sont pas nécessairement confirmés comme des attaques.
+*CommandAndControl* Signale qu'un attaquant tente d'établir une communication avec un serveur distant.
+*Impac*t est la catégorie la moins fréquente cela signifie que les incidents ayant un effet direct et destructeur sont moins courants du à une bonne capacité de détection précoce.
+
+*Autres* cette catégorie regroupe toutes les autres catégories moins fréquentes.
+
+```{r IncidentGrade-fill-selon-IncidentGrade}
+incident_counts <- df_train %>%
+  count(IncidentGrade, name = "Count")
+
+ggplot(incident_counts, aes(x = "", y = Count, fill = IncidentGrade)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y", start = 0) +
+  labs(title = "Répartition des IncidentGrade") +
+  theme_void() +
+  scale_fill_viridis_d()
 ```
 
 **interpretation** 
 
+*BenignPositive*(Majoritaire) représente une grande partie du graphique ces incidents sont détectés mais ne sont pas détectés comme des menaces graves .
+Ce qui signufie que le système génère beaucoup d'alertes qui ne nécessitent pas nécessairement d'intervention.
+
+*TruePositive* (Proportion élevée) indique que le système de détection a bien identifié de véritables incidents qui sont des alertes valides et confirmées comme étant des menaces .
+Une proportion élevée de TruePositiveest un bon signe car cela signifie que la détection est efficace.
+
+*FalsePositive* (Moins fréquents) ce sont des alertes générées à tort .Une proportion trop élevée de FalsePositivepeut poser problème , car cela signifie que l'algorithme génère trop d'alertes inutiles , ce qui peut surcharger les analystes et réduire la confiance dans le système.
 
 ```{r IncidentGrade-fill-selon-EntityType}
-
+ggplot(df_train, aes(x = EntityType, fill = IncidentGrade)) +
+  geom_bar() +
+  labs(
+    title = "Nombre d'incidents par EntityType et IncidentGrade",
+    x = "Type d'entité",
+    y = "Nombre d'incidents"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation**
+Les entités « Utilisateur » , « IP » et « Machine » sont celles qui présentent le plus grand nombre d'incidents. Cela signifie que les utilisateurs , les adresses IP et les machines sont les principales cibles ou sources d'alertes.
 
+*TruePositive*:Certaines entités, notamment "User" et "IP" , ont une grande proportion de TruePositive cela signifie que ces entités sont fortement impliquées dans des attaques avérées.
+
+*FalsePositive*:Il est présents dans plusieurs EntityType, notamment "Machine" , "MailMessage" et "User".Ces entités génèrent des alertes erronées , ce qui pourrait entraîner une surcharge pour les analystes de sécurité.
+
+*BenignPositive*: Alertes non critiques "User" , "Machine" et "MailMessage" ont une grande proportion de BenignPositive.Cela signifie que ces entités sont souvent surveillées, mais la majorité des alertes ne doivent pas d'action urgente.
 
 ```{r IncidentGrade-fill-selon-SuspicionLevel}
 
+ggplot(df_train, aes(x = SuspicionLevel, fill = IncidentGrade)) +
+  geom_bar() +
+  labs(
+    title = "Répartition des IncidentGrade par niveau de suspicion",
+    x = "Niveau de suspicion",
+    y = "Nombre d'incidents"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation**
+Le graphique présente deux niveaux de suspicion :*Suspect* et *Éliminé* cela signifie que la majorité des alertes sont considérées comme suspectes , tandis qu'un petit nombre d'incidents sont éliminés.
 
+*TruePositive*La majorité des véritables incidents sont classés comme "Suspicious" Ce qui signifie que le modèle identifie correctement les menaces réelles dans les alertes suspectes.*Eliminate* a très peu de TruePositive.
+
+*FalsePositive*Une proportion non négligeable de FalsePositive dans "Suspicious" signifie que le modèle génère encore des alertes erronées , classant des événements inoffensifs comme suspects.*Eliminate* contient très peu de TruePositive.
+
+*BenignPositive*La majorité des incidents en "Éliminés" sont des BenignPositive.
+Cela signifie que ces alertes ont été examinées et jugées non dangereuses .
+
+Le modèle fonctionne bien en identifiant les TruePositive dans "Suspicious" mais nous pouvons affiner des critères pour réduire les FalsePositive et limiter la surcharge.
 
 ```{r IncidentGrade-fill-selon-Usage}
 
+ggplot(df_train, aes(x = Usage, fill = IncidentGrade)) +
+  geom_bar() +
+  labs(
+    title = "Répartition des IncidentGrade par Usage",
+    x = "Usage",
+    y = "Nombre d'incidents"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation**
+Le nombre total d'incidents est plus élevé pour "Public" que pour "Private" cela indique que les ressources publiques sont plus exposées aux menaces.
 
+*TruePositive* dans les ressources publiques cela signifie que les attaques réussies sont plus fréquentes sur les entités publiques.
 
+*FalsePositive* sont aussi plus fréquents en "Public" cela indique Une surcharge d'alertes non pertinente sur les systèmes publics.
+
+*BenignPositive* présence en "Public" signifie que beaucoup d'incidents en Public ne sont pas compris comme critiques.
 
 ```{r IncidentGrade-evolution-dans-le-temps}
 
@@ -472,8 +552,9 @@ ggplot(daily_counts, aes(x = Date, y = Count)) +
 ```
 
 **Interprétation**
+On observe une augmentation brutale autour du 1er juin , où le nombre d'incidents passe de moins de 500 à plus de 1500 en quelques jours du a des activité malveillante.Après le pic début juin, le nombre d'incidents commence à redescendre , avec une apparition notable entre le 6 et le 13 juin.Une tendance clairement baissière après le 13 juin ce qui es du surement a une réponse efficace des équipes de cybersécurité ou une résolution des problèmes détectés début juin.
+La ligne rouge indique la moyenne du nombre d'incidents sur la période .
 
-
+Analysons les incidents entre le 1er et le 6 juin afin d'dentifier la cause du pic, vérifiions l'impact des contre-mesures après le 13 juin  Ont-elles été efficaces ?
 
 ### 3. Regression logistique
-
