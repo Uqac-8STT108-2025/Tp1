@@ -17,6 +17,7 @@ library(readr)
 library(rsample)
 library(knitr)
 library(lubridate)
+library(ISLR2)
 ```
 
 ```{r importation-des-fonctions, include=FALSE}
@@ -558,3 +559,34 @@ La ligne rouge indique la moyenne du nombre d'incidents sur la période .
 Analysons les incidents entre le 1er et le 6 juin afin d'dentifier la cause du pic, vérifiions l'impact des contre-mesures après le 13 juin  Ont-elles été efficaces ?
 
 ### 3. Regression logistique
+ On a plus de 2 classes pour la variable cible 'IncidentGrade', on utilisera donc la régression logistique multinomiale.
+```{r regression-logistique}
+dim(df_train)
+library(Matrix)
+library(glmnet)
+
+#On séléctionne aléatoirement 1000 observations
+set.seed(165)
+df_train<-df_train[sample(nrow(df_train),1000),]
+df_test<-df_test[sample(nrow(df_test),1000),]
+#Convertir 'incidentGrade' en facteur 
+
+df_train$IncidentGrade<-as.factor(df_train$IncidentGrade)
+
+#Séparer les variables explicatives de la variable cible 
+x<-model.matrix(IncidentGrade~.,data=df_train)[,-1]
+y<-df_train$IncidentGrade
+
+#Entraînement du modèle 
+modele<-glmnet(x,y,family="multinomial")
+modele
+
+
+#Prédiction sur le jeu de donnée test
+
+#Les variables explicatives sur le jeu de donnée test
+#x_test<-model.matrix(IncidentGrade~.,data=df_test)[,-1]
+
+
+```
+
