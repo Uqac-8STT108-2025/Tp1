@@ -17,6 +17,10 @@ library(readr)
 library(rsample)
 library(knitr)
 library(lubridate)
+library(caret)   # machine learning
+library(nnet)    # régression multinomiale
+library(onehot)
+library(xgboost) # regressiom multinomiale performante
 ```
 
 ```{r importation-des-fonctions, include=FALSE}
@@ -476,4 +480,76 @@ ggplot(daily_counts, aes(x = Date, y = Count)) +
 
 
 ### 3. Regression logistique
+```{r logistic_regression}
+#transformation des variables catégorielles
+df_train[] <- lapply(df_train, function(x) if (is.factor(x) || is.character(x)) as.numeric(as.factor(x)) else x)
+#Transformation de IncidentGrade pour ne contenir que deux valeurs "FalsePositive" et "TruePositive"
+df_train_incidentGrade2 <- df_train %>%
+  filter(IncidentGrade %in% c("FalsePositive","TruePositive"))
+#Evaluation du nombre d'element unique dans chaque colonne
+sapply(df_train, function(col) length(unique(na.omit(col))))
+# Ajuster le modèle de régression logistique
+model <- glm(IncidentGrade ~., data = df_train_incidenGrade2[1:2000,], family = binomial)
+# Résumé du modèle
+summary(model)
+
+```
+
+### 4. Regression multinomiale
+```{r}
+incident_grade_number_per_group <- df_train %>%
+  count(IncidentGrade)
+print(incident_grade_number_per_group)
+
+df_train_moins_incidentGrade = df_train[,!names(df_train) %in% "IncidentGrade" ] 
+encoder_1hot <- onehot(df_train_moins_incidentGrade, stringsAsFactors = TRUE)
+df_train_encoded <- predict(encoder_1hot, df_train_moins_incidentGrade)
+df_train_encoded$IncidentGrade = df_train$IncidentGrade
+
+
+# Entraîner un modèle de régression logistique multinomiale
+model <- multinom(IncidentGrade ~ ., data = data.frame(df_train_encoded[1:1000,])) # le modèle génère une erreur 
+#Erreur dans nnet.default(X, Y, w, mask = mask, size = 0, skip = TRUE, softmax = TRUE,  : 
+#  trop (53775) de pondérations
+#Pour rémédier à cela nous allons procéder à une analyse par composantes principales pour réduire les 
+#variables  préddictives à 10
+#avant cela transformons les données catégorielles en valeurs numériques.
+
+
+
+#preProc <- preProcess(df_train[, -target_column], method = "pca", pcaComp = 10) # Garde 10 composantes principales
+#df_train_pca <- predict(preProc, df_train)
+#df_test_pca <- predict(preProc, df_test)
+
+
+# Résumé du modèle
+#summary(model)
+
+```
+
+```{r}
+library(onehot)
+
+# Ex. dataset avec une variable catégorielle
+df <- data.frame(Couleur = c("Rouge", "Bleu", "Vert", "Rouge", "Bleu"), 
+                 Valeur = c(10, 20, 15, 25, 30))
+
+# Encodage One-Hot
+encoder <- onehot(df, stringsAsFactors = TRUE)
+df_encoded <- predict(encoder, df)
+
+# Appliquer le PCA
+pca_result <- prcomp(df_encoded, center = TRUE, scale. = TRUE)
+summary(pca_result)
+
+```
+
+
+
+
+
+
+
+
+
 
