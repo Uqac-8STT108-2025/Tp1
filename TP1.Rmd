@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r importation-librairies, include=FALSE}
+#install.packages("glmnet")
+#install.packages("xgboost")
 library(tidyverse)
 library(skimr)
 library(dplyr)
@@ -17,14 +19,11 @@ library(readr)
 library(rsample)
 library(knitr)
 library(lubridate)
-<<<<<<< HEAD
 library(caret)   # machine learning
 library(nnet)    # régression multinomiale
 library(onehot)
 library(xgboost) # regressiom multinomiale performante
-=======
 library(ISLR2)
->>>>>>> 4be61698d1eb389170bddeb65885abf2fd916129
 ```
 
 ```{r importation-des-fonctions, include=FALSE}
@@ -317,7 +316,7 @@ df_train$MitreTechniques[is.na(df_train$MitreTechniques)] <- "Unknown"
 
 
 
-```{r statistiques,include=FALSE}
+```{r statistiques}
 skim(df_train) %>%
   kable()
 ```
@@ -376,22 +375,24 @@ ggplot(data = IncidentGrade_count,
     y = " "
   ) +
   theme_minimal()
- view(df_train)
+# view(df_train)
 ```
 **Interpretation** :  Le nombre élevé de BenignPositive et FalsePositive indique que le système génère beaucoup d'alertes inutiles (bruit).Ce qui est contre productif.
 Une première recommandation est déjà d'e rafinner d'améliorer le système d'alerte pour qu'il capte moin de bruit.
 
 
 ```{r repartition-categories}
-
 category_counts <- df_train %>%
-  count(Category, name = "Count") %>%
-  arrange(desc(Count))
+  count(Category, name = "Count") %>%  
+  arrange(desc(Count))  
 
-top_5_categories <- category_counts %>% slice(1:5)
-autres_count <- sum(category_counts$Count) - sum(top_5_categories$Count)
+top_4_categories <- category_counts %>%
+  head(4) 
 
-top_5_categories <- top_5_categories %>%
+
+autres_count <- sum(category_counts$Count) - sum(top_4_categories$Count)
+
+top_5_categories <- top_4_categories %>%
   add_row(Category = "Autres", Count = autres_count)
 
 ggplot(top_5_categories, aes(x = "", y = Count, fill = fct_reorder(Category, -Count))) +
@@ -423,18 +424,52 @@ ggplot(incident_counts, aes(x = "", y = Count, fill = IncidentGrade)) +
   coord_polar(theta = "y", start = 0) +
   labs(title = "Répartition des IncidentGrade") +
   theme_void() +
-  scale_fill_viridis_d()
+  scale_fill_manual(values = c("FalsePositive" = "skyblue", "BenignPositive" = "gray", "TruePositive" = "indianred"))
+
 ```
 
 **interpretation** 
 
-*BenignPositive*(Majoritaire) représente une grande partie du graphique ces incidents sont détectés mais ne sont pas détectés comme des menaces graves .
-Ce qui signufie que le système génère beaucoup d'alertes qui ne nécessitent pas nécessairement d'intervention.
+*BenignPositive*(Majoritaire) représente une grande partie du graphique. Ce qui signifie que le système présent
+capture énormément de fausses alertes. 
 
 *TruePositive* (Proportion élevée) indique que le système de détection a bien identifié de véritables incidents qui sont des alertes valides et confirmées comme étant des menaces .
 Une proportion élevée de TruePositiveest un bon signe car cela signifie que la détection est efficace.
 
-*FalsePositive* (Moins fréquents) ce sont des alertes générées à tort .Une proportion trop élevée de FalsePositivepeut poser problème , car cela signifie que l'algorithme génère trop d'alertes inutiles , ce qui peut surcharger les analystes et réduire la confiance dans le système.
+*FalsePositive* (Moins fréquents) ce sont des alertes générées à tort. Une proportion trop élevée de FalsePositive peut poser problème , car cela signifie que l'algorithme génère trop d'alertes inutiles , ce qui peut surcharger les analystes et réduire la confiance dans le système.
+
+Puisque nous voulons faire une regression logistique pour prédire la variable 'IncidentGrade', nous allons
+modifier cette dernière pour obtenir juste deux classes de la façon suivante :
+
+BenignPositive --> negatif
+
+FalsePositive --> negatif
+
+TruePositive --> positif
+
+```{r modification-IncidentGrade}
+library(dplyr)
+
+df_train <- df_train %>%
+  mutate(
+    IncidentGrade = case_when(
+      IncidentGrade == "BenignPositive" ~ "negatif",
+      IncidentGrade == "FalsePositive" ~ "negatif",
+      IncidentGrade == "TruePositive" ~ "positif"
+    )
+  )
+
+df_test <- df_test %>%
+  mutate(
+    IncidentGrade = case_when(
+      IncidentGrade == "BenignPositive" ~ "negatif",
+      IncidentGrade == "FalsePositive" ~ "negatif",
+      IncidentGrade == "TruePositive" ~ "positif"
+    )
+  )
+
+```
+
 
 ```{r IncidentGrade-fill-selon-EntityType}
 ggplot(df_train, aes(x = EntityType, fill = IncidentGrade)) +
@@ -445,64 +480,47 @@ ggplot(df_train, aes(x = EntityType, fill = IncidentGrade)) +
     y = "Nombre d'incidents"
   ) +
   theme_minimal() +
-  scale_fill_viridis_d() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  scale_fill_manual(values = c("negatif" ="skyblue" , "positif" ="indianred" ))  + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  coord_flip()
 ```
 **interpretation**
-Les entités « Utilisateur » , « IP » et « Machine » sont celles qui présentent le plus grand nombre d'incidents. Cela signifie que les utilisateurs , les adresses IP et les machines sont les principales cibles ou sources d'alertes.
 
-*TruePositive*:Certaines entités, notamment "User" et "IP" , ont une grande proportion de TruePositive cela signifie que ces entités sont fortement impliquées dans des attaques avérées.
-
-*FalsePositive*:Il est présents dans plusieurs EntityType, notamment "Machine" , "MailMessage" et "User".Ces entités génèrent des alertes erronées , ce qui pourrait entraîner une surcharge pour les analystes de sécurité.
-
-*BenignPositive*: Alertes non critiques "User" , "Machine" et "MailMessage" ont une grande proportion de BenignPositive.Cela signifie que ces entités sont souvent surveillées, mais la majorité des alertes ne doivent pas d'action urgente.
 
 ```{r IncidentGrade-fill-selon-SuspicionLevel}
 
 ggplot(df_train, aes(x = SuspicionLevel, fill = IncidentGrade)) +
   geom_bar() +
   labs(
-    title = "Répartition des IncidentGrade par niveau de suspicion",
+    title = " IncidentGrade par niveau de suspicion",
     x = "Niveau de suspicion",
     y = "Nombre d'incidents"
   ) +
   theme_minimal() +
-  scale_fill_viridis_d() +
+  scale_fill_manual(values = c("negatif" ="skyblue" , "positif" ="indianred"))  +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation**
-Le graphique présente deux niveaux de suspicion :*Suspect* et *Éliminé* cela signifie que la majorité des alertes sont considérées comme suspectes , tandis qu'un petit nombre d'incidents sont éliminés.
 
-*TruePositive*La majorité des véritables incidents sont classés comme "Suspicious" Ce qui signifie que le modèle identifie correctement les menaces réelles dans les alertes suspectes.*Eliminate* a très peu de TruePositive.
 
-*FalsePositive*Une proportion non négligeable de FalsePositive dans "Suspicious" signifie que le modèle génère encore des alertes erronées , classant des événements inoffensifs comme suspects.*Eliminate* contient très peu de TruePositive.
-
-*BenignPositive*La majorité des incidents en "Éliminés" sont des BenignPositive.
-Cela signifie que ces alertes ont été examinées et jugées non dangereuses .
-
-Le modèle fonctionne bien en identifiant les TruePositive dans "Suspicious" mais nous pouvons affiner des critères pour réduire les FalsePositive et limiter la surcharge.
 
 ```{r IncidentGrade-fill-selon-Usage}
 
 ggplot(df_train, aes(x = Usage, fill = IncidentGrade)) +
   geom_bar() +
   labs(
-    title = "Répartition des IncidentGrade par Usage",
+    title = " IncidentGrade par Usage",
     x = "Usage",
     y = "Nombre d'incidents"
   ) +
   theme_minimal() +
-  scale_fill_viridis_d() +
+  scale_fill_manual(values = c("negatif" ="skyblue" , "positif" ="indianred" ))  +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation**
-Le nombre total d'incidents est plus élevé pour "Public" que pour "Private" cela indique que les ressources publiques sont plus exposées aux menaces.
 
-*TruePositive* dans les ressources publiques cela signifie que les attaques réussies sont plus fréquentes sur les entités publiques.
 
-*FalsePositive* sont aussi plus fréquents en "Public" cela indique Une surcharge d'alertes non pertinente sur les systèmes publics.
 
-*BenignPositive* présence en "Public" signifie que beaucoup d'incidents en Public ne sont pas compris comme critiques.
 
 ```{r IncidentGrade-evolution-dans-le-temps}
 
@@ -512,6 +530,7 @@ incident_grade_monthly <- df_train %>%
   summarise(Count = n(), .groups = 'drop')
 
 # Graphique de l'évolution des IncidentGrade dans le temps
+
 ggplot(incident_grade_monthly, aes(x = Month, y = Count, color = IncidentGrade)) +
   geom_line(size = 1) +
   labs(
@@ -521,9 +540,12 @@ ggplot(incident_grade_monthly, aes(x = Month, y = Count, color = IncidentGrade))
     color = "IncidentGrade"
   ) +
   theme_minimal() +
+  scale_color_manual(values = c("negatif" = "skyblue", "positif" = "red")) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation** On remarque que les déclarations d'incidents sont stables durant l'hivers.
+et le système ne capture que les transactions frauduleuse.
+
 C'est en mai et Juin que se dégagent la majorité des signalements. Possible lien avec 
 tous les mouvements qui se déroulent durant l'été ? c'est une question qu'il faudra explorer.
 
@@ -547,7 +569,7 @@ ggplot(daily_counts, aes(x = Date, y = Count)) +
   geom_line(color = "skyblue", size = 1) +
   geom_point(color = "skyblue") +
   labs(
-    title = paste("Number of Incidents from", format(start_date, "%B %Y"), "to", format(end_date, "%B %Y")),
+    title = paste("Incidents reportés de ", format(start_date, "%B %Y"), "à", format(end_date, "%B %Y")),
     x = "Date",
     y = "Numbre d'ncidents"
   ) +
@@ -566,109 +588,46 @@ La ligne rouge indique la moyenne du nombre d'incidents sur la période .
 Analysons les incidents entre le 1er et le 6 juin afin d'dentifier la cause du pic, vérifiions l'impact des contre-mesures après le 13 juin  Ont-elles été efficaces ?
 
 ### 3. Regression logistique
-<<<<<<< HEAD
-```{r logistic_regression}
-#transformation des variables catégorielles
-df_train[] <- lapply(df_train, function(x) if (is.factor(x) || is.character(x)) as.numeric(as.factor(x)) else x)
-#Transformation de IncidentGrade pour ne contenir que deux valeurs "FalsePositive" et "TruePositive"
-df_train_incidentGrade2 <- df_train %>%
-  filter(IncidentGrade %in% c("FalsePositive","TruePositive"))
-#Evaluation du nombre d'element unique dans chaque colonne
-sapply(df_train, function(col) length(unique(na.omit(col))))
-# Ajuster le modèle de régression logistique
-model <- glm(IncidentGrade ~., data = df_train_incidenGrade2[1:2000,], family = binomial)
-# Résumé du modèle
+
+```{r choix-des-predicteurs}
+
+df_predicteurs <- list()
+df_predicteurs <- list()
+df_train$IncidentGrade <- ifelse(df_train$IncidentGrade == "positif", 1, 0)
+df_train_ <- df_train
+df_train_[] <- lapply(df_train, function(x) if(is.factor(x)) as.integer(x) else x)
+head(df_train_)
+
+for(colonne in colnames(df_train_)[colnames(df_train_) != "IncidentGrade"]){
+  model <- glm(IncidentGrade ~ get(colonne), data = df_train_, family = binomial)
+  model_summary <- summary(model)
+  p_value <- model_summary$coefficients[, 4]
+  if ((p_value[2] > 0.00001 & p_value[2] < 0.05)){
+    cat('p-value pour', colonne, '= ', p_value[2], "\n")
+    df_predicteurs = c(df_predicteurs, colonne)
+  }
+}
+df_predicteurs <- unlist(df_predicteurs)
+df_train_prepare <- df_train_[, df_predicteurs]
+df_train_prepare$IncidentGrade = df_train$IncidentGrade
+
+model <- glm(IncidentGrade ~., data = df_train_prepare , family = binomial)
 summary(model)
 
 ```
 
-### 4. Regression multinomiale
-```{r}
-incident_grade_number_per_group <- df_train %>%
-  count(IncidentGrade)
-print(incident_grade_number_per_group)
+Interpretation : Seules les variables Timestamp et Usage sont significatives
 
-df_train_moins_incidentGrade = df_train[,!names(df_train) %in% "IncidentGrade" ] 
-encoder_1hot <- onehot(df_train_moins_incidentGrade, stringsAsFactors = TRUE)
-df_train_encoded <- predict(encoder_1hot, df_train_moins_incidentGrade)
-df_train_encoded$IncidentGrade = df_train$IncidentGrade
+```{r regression-logistique-finale}
 
-
-# Entraîner un modèle de régression logistique multinomiale
-model <- multinom(IncidentGrade ~ ., data = data.frame(df_train_encoded[1:1000,])) # le modèle génère une erreur 
-#Erreur dans nnet.default(X, Y, w, mask = mask, size = 0, skip = TRUE, softmax = TRUE,  : 
-#  trop (53775) de pondérations
-#Pour rémédier à cela nous allons procéder à une analyse par composantes principales pour réduire les 
-#variables  préddictives à 10
-#avant cela transformons les données catégorielles en valeurs numériques.
-
-
-
-#preProc <- preProcess(df_train[, -target_column], method = "pca", pcaComp = 10) # Garde 10 composantes principales
-#df_train_pca <- predict(preProc, df_train)
-#df_test_pca <- predict(preProc, df_test)
-
-
-# Résumé du modèle
-#summary(model)
+model <- glm(IncidentGrade ~Timestamp+Usage, data = df_train_prepare , family = binomial)
+summary(model)
 
 ```
+* interpretation :
 
-```{r}
-library(onehot)
-
-# Ex. dataset avec une variable catégorielle
-df <- data.frame(Couleur = c("Rouge", "Bleu", "Vert", "Rouge", "Bleu"), 
-                 Valeur = c(10, 20, 15, 25, 30))
-
-# Encodage One-Hot
-encoder <- onehot(df, stringsAsFactors = TRUE)
-df_encoded <- predict(encoder, df)
-
-# Appliquer le PCA
-pca_result <- prcomp(df_encoded, center = TRUE, scale. = TRUE)
-summary(pca_result)
-
-```
+* C'est donc le moment de calculer l'accurency et interpreter
 
 
 
-
-
-
-
-
-
-=======
- On a plus de 2 classes pour la variable cible 'IncidentGrade', on utilisera donc la régression logistique multinomiale.
-```{r regression-logistique}
-dim(df_train)
-library(Matrix)
-library(glmnet)
-
-#On séléctionne aléatoirement 1000 observations
-set.seed(165)
-df_train<-df_train[sample(nrow(df_train),1000),]
-df_test<-df_test[sample(nrow(df_test),1000),]
-#Convertir 'incidentGrade' en facteur 
-
-df_train$IncidentGrade<-as.factor(df_train$IncidentGrade)
-
-#Séparer les variables explicatives de la variable cible 
-x<-model.matrix(IncidentGrade~.,data=df_train)[,-1]
-y<-df_train$IncidentGrade
-
-#Entraînement du modèle 
-modele<-glmnet(x,y,family="multinomial")
-modele
-
-
-#Prédiction sur le jeu de donnée test
-
-#Les variables explicatives sur le jeu de donnée test
-#x_test<-model.matrix(IncidentGrade~.,data=df_test)[,-1]
-
-
-```
->>>>>>> 4be61698d1eb389170bddeb65885abf2fd916129
 
