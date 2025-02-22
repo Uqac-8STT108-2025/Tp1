@@ -11,19 +11,7 @@
 
 <meta name="author" content="GroupeB" />
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<meta name="date" content="2025-02-20" />
-=======
-<<<<<<< HEAD
-<meta name="date" content="2025-02-20" />
-=======
-<meta name="date" content="2025-02-19" />
->>>>>>> 4be61698d1eb389170bddeb65885abf2fd916129
->>>>>>> dd4398ac9ad8186678de89f17cde3d836d235fbe
-=======
-<meta name="date" content="2025-02-21" />
->>>>>>> 383e624b2ba70a6a2e0f703a500f4f3c7036c512
+<meta name="date" content="2025-02-22" />
 
 <title>tp1</title>
 
@@ -364,19 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">tp1</h1>
 <h4 class="author">GroupeB</h4>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<h4 class="date">2025-02-20</h4>
-=======
-<<<<<<< HEAD
-<h4 class="date">2025-02-20</h4>
-=======
-<h4 class="date">2025-02-19</h4>
->>>>>>> 4be61698d1eb389170bddeb65885abf2fd916129
->>>>>>> dd4398ac9ad8186678de89f17cde3d836d235fbe
-=======
-<h4 class="date">2025-02-21</h4>
->>>>>>> 383e624b2ba70a6a2e0f703a500f4f3c7036c512
+<h4 class="date">2025-02-22</h4>
 
 </div>
 
@@ -1432,150 +1408,8 @@ Ont-elles été efficaces ?</p>
 </div>
 <div id="regression-logistique" class="section level3">
 <h3>3. Regression logistique</h3>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<p>On a plus de 2 classes pour la variable cible ‘IncidentGrade’, on
-utilisera donc la régression logistique multinomiale.</p>
-<pre class="r"><code>dim(df_train)</code></pre>
-<pre><code>## [1] 20000    27</code></pre>
-<pre class="r"><code>library(Matrix)</code></pre>
-<pre><code>## 
-## Attachement du package : &#39;Matrix&#39;</code></pre>
-<pre><code>## Les objets suivants sont masqués depuis &#39;package:tidyr&#39;:
-## 
-##     expand, pack, unpack</code></pre>
-<pre class="r"><code>library(glmnet)</code></pre>
-<pre><code>## Loaded glmnet 4.1-8</code></pre>
-<pre class="r"><code>#On séléctionne aléatoirement 1000 observations
-set.seed(165)
-df_train&lt;-df_train[sample(nrow(df_train),1000),]
-df_test&lt;-df_test[sample(nrow(df_test),1000),]
-#Convertir &#39;incidentGrade&#39; en facteur 
-
-df_train$IncidentGrade&lt;-as.factor(df_train$IncidentGrade)
-
-#Séparer les variables explicatives de la variable cible 
-x&lt;-model.matrix(IncidentGrade~.,data=df_train)[,-1]
-y&lt;-df_train$IncidentGrade
-
-#Entraînement du modèle 
-modele&lt;-glmnet(x,y,family=&quot;multinomial&quot;)
-modele</code></pre>
-<pre><code>## 
-## Call:  glmnet(x = x, y = y, family = &quot;multinomial&quot;) 
-## 
-##      Df  %Dev   Lambda
-## 1     0  0.00 0.177200
-## 2     1  0.69 0.169100
-## 3     1  1.32 0.161400
-## 4     2  1.96 0.154100
-## 5     2  2.65 0.147100
-## 6     3  3.32 0.140400
-## 7     3  4.02 0.134000
-## 8     3  4.66 0.127900
-## 9     4  5.36 0.122100
-## 10    4  6.04 0.116600
-## 11    5  6.97 0.111300
-## 12    7  7.85 0.106200
-## 13    8  8.87 0.101400
-## 14    8  9.84 0.096780
-## 15    8 10.73 0.092380
-## 16    8 11.54 0.088180
-## 17    9 12.28 0.084170
-## 18    9 12.97 0.080350
-## 19   10 13.70 0.076700
-## 20   10 14.43 0.073210
-## 21   10 15.08 0.069880
-## 22   10 15.69 0.066710
-## 23   10 16.24 0.063670
-## 24   14 16.83 0.060780
-## 25   16 17.50 0.058020
-## 26   17 18.13 0.055380
-## 27   19 18.85 0.052860
-## 28   19 19.58 0.050460
-## 29   19 20.24 0.048170
-## 30   21 20.91 0.045980
-## 31   21 21.56 0.043890
-## 32   23 22.16 0.041890
-## 33   26 22.77 0.039990
-## 34   31 23.41 0.038170
-## 35   34 24.06 0.036440
-## 36   42 24.72 0.034780
-## 37   45 25.44 0.033200
-## 38   47 26.17 0.031690
-## 39   53 26.88 0.030250
-## 40   56 27.62 0.028880
-## 41   73 28.49 0.027560
-## 42   93 29.46 0.026310
-## 43  160 30.73 0.025110
-## 44  264 32.65 0.023970
-## 45  418 35.32 0.022880
-## 46  530 38.71 0.021840
-## 47  549 42.03 0.020850
-## 48  548 45.04 0.019900
-## 49  553 47.78 0.019000
-## 50  556 50.30 0.018130
-## 51  558 52.63 0.017310
-## 52  558 54.78 0.016520
-## 53  567 56.78 0.015770
-## 54  580 58.66 0.015060
-## 55  588 60.44 0.014370
-## 56  602 62.10 0.013720
-## 57  610 63.68 0.013090
-## 58  629 65.16 0.012500
-## 59  632 66.57 0.011930
-## 60  637 67.89 0.011390
-## 61  651 69.13 0.010870
-## 62  662 70.32 0.010380
-## 63  670 71.44 0.009906
-## 64  677 72.50 0.009455
-## 65  678 73.51 0.009026
-## 66  682 74.46 0.008615
-## 67  686 75.36 0.008224
-## 68  689 76.21 0.007850
-## 69  689 77.02 0.007493
-## 70  689 77.78 0.007153
-## 71  692 78.51 0.006828
-## 72  690 79.20 0.006517
-## 73  692 79.85 0.006221
-## 74  692 80.47 0.005938
-## 75  693 81.06 0.005668
-## 76  695 81.62 0.005411
-## 77  697 82.16 0.005165
-## 78  698 82.67 0.004930
-## 79  699 83.15 0.004706
-## 80  699 83.61 0.004492
-## 81  700 84.05 0.004288
-## 82  703 84.47 0.004093
-## 83  715 84.87 0.003907
-## 84  717 85.25 0.003729
-## 85  722 85.61 0.003560
-## 86  726 85.96 0.003398
-## 87  735 86.30 0.003244
-## 88  739 86.62 0.003096
-## 89  739 86.93 0.002956
-## 90  740 87.22 0.002821
-## 91  741 87.50 0.002693
-## 92  742 87.77 0.002571
-## 93  744 88.02 0.002454
-## 94  745 88.27 0.002342
-## 95  745 88.51 0.002236
-## 96  744 88.73 0.002134
-## 97  744 88.94 0.002037
-## 98  746 89.15 0.001945
-## 99  750 89.34 0.001856
-## 100 751 89.53 0.001772</code></pre>
-<pre class="r"><code>#Prédiction sur le jeu de donnée test
-
-#Les variables explicatives sur le jeu de donnée test
-#x_test&lt;-model.matrix(IncidentGrade~.,data=df_test)[,-1]</code></pre>
-=======
-<p><span class="math inline">\(F = \frac{\frac{(R^2 / p)}{(1 - R^2) / (n
-- p - 1)}}\)</span> <span class="math inline">\(\frac{a}{b}\)</span></p>
->>>>>>> dd4398ac9ad8186678de89f17cde3d836d235fbe
-=======
 <p>Avant de commencer, on va scinder notre jeu de donnée en un ensemble
-d’e test’entrainement et un ensemble de test.</p>
+de test’entrainement et un ensemble de test.</p>
 <p>On va desormais travailler uniquement sur l’ensemble
 d’entrainement.</p>
 <pre class="r"><code>df_ &lt;- df_train #Je n&#39;ai pas envie de modifier df_train pour l&#39;instant
@@ -1629,9 +1463,15 @@ summary(glm.fits)</code></pre>
 ## AIC: 26146
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
-<ul>
-<li>interpretation :</li>
-</ul>
+<p><strong>interpretation</strong>: Les variables Timestamp, RegistryKey
+et Usage sont statistiquement significatives. Pour les variables
+Timestamp et Usage , on a des coefficients négatifs (-0.0069) et
+(-0.07),ce qui diminue la probabilité d’être TruePositive. Pour la
+variable RegistryKey avec un coefficient positif ( 0.30),la probabilité
+d’être TruePositive augmente.</p>
+<p>Si l’incident inclut une clé enregistré impliquée (RegistryKey) , la
+probabilité d’être TruePositive augmente autrement dit que l’incident
+soit véridique.</p>
 <pre class="r"><code>glm.fits &lt;- glm(IncidentGrade ~ Timestamp + RegistryKey + Usage, 
                 data = df_train, 
                 family = binomial)
@@ -1692,14 +1532,13 @@ cat(&quot;\n Précision du modèle sur les données de test : &quot;, round(prec
 données de test :</li>
 </ul>
 <p>C’est un bon modèle, il peut être déployé</p>
->>>>>>> 383e624b2ba70a6a2e0f703a500f4f3c7036c512
 </div>
 </div>
 <div id="modèle-batit-sur-la-vrai-base-de-données-au-complet." class="section level2">
 <h2>Modèle Batit sur la vrai base de données au complet.</h2>
 <pre class="r"><code># On selectionne les colonnes utiles
-
-df &lt;- Database[, c(&quot;Timestamp&quot;, &quot;RegistryKey&quot;, &quot;Usage&quot;, &quot;IncidentGrade&quot;)]
+# J&#39;ai mis en commentaire cette partie, elle ne s&#39;execute pas chez moi 
+#df &lt;- Database[, c(&quot;Timestamp&quot;, &quot;RegistryKey&quot;, &quot;Usage&quot;, &quot;IncidentGrade&quot;)]
 #On prepare les données sous la base de tout ce qui est dejà connu plus haut
 df$Timestamp &lt;- as.Date(df$Timestamp, format = &quot;%Y-%m-%d&quot;)
 

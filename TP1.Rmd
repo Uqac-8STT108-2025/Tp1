@@ -601,7 +601,7 @@ Analysons les incidents entre le 1er et le 6 juin afin d'dentifier la cause du p
 df$IncidentGrade <- ifelse(df$IncidentGrade == "positif", 1, 0)
 ```
 
-Avant de commencer, on va scinder notre jeu de donnée en un ensemble d'e test'entrainement et un ensemble de test.
+Avant de commencer, on va scinder notre jeu de donnée en un ensemble de test'entrainement et un ensemble de test.
 
 
 
@@ -675,8 +675,10 @@ summary(glm.fits)
 
 
 
-* interpretation :
+**interpretation**: Les variables Timestamp, RegistryKey et Usage sont statistiquement significatives. Pour les variables Timestamp et Usage , on a des coefficients négatifs (-0.0069) et (-0.07),ce qui diminue la probabilité d'être TruePositive.
+Pour la variable RegistryKey avec un coefficient positif ( 0.30),la probabilité d'être TruePositive augmente.
 
+Si l'incident inclut une clé enregistré impliquée (RegistryKey) , la probabilité d'être TruePositive augmente autrement dit que l'incident soit véridique.
 
 
 
@@ -725,8 +727,8 @@ C'est un bon modèle, il peut être déployé
 
 ```{r deploiement-du-modele}
 # On selectionne les colonnes utiles
-
-df <- Database[, c("Timestamp", "RegistryKey", "Usage", "IncidentGrade")]
+# J'ai mis en commentaire cette partie, elle ne s'execute pas chez moi 
+#df <- Database[, c("Timestamp", "RegistryKey", "Usage", "IncidentGrade")]
 #On prepare les données sous la base de tout ce qui est dejà connu plus haut
 df$Timestamp <- as.Date(df$Timestamp, format = "%Y-%m-%d")
 
