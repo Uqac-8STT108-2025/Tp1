@@ -467,7 +467,18 @@ ggplot(df, aes(x = EntityType, fill = IncidentGrade)) +
   coord_flip()
 ```
 **interpretation**
+Les entités les plus affectées sont Ip, Machine, User, etMailMessage,ces entités sont les plus exposées aux incidents de sécurité et nécessairement une surveillance renforcée.
 
+*IncidentGrade* est positif(rouge) ce qui confirme Incidents, User, Ip, et Machine présente un nombre élevé d'incidents positifs ce qui signifie que ces entités sont fréquemment compromises ou impliquées dans des attaques avérées.
+
+*IncidentGrade* est négatif(bleu) certaines entités ont un grand nombre d'incidents classés comme négatifs ( negatif en bleu) comme Ip, MailMessage, et Machine ce qui peut indiquer quil ya trop de fausses alertes,des règles de détection trop sensibles oubien un filtrage inadéquat des menaces réelles .
+
+Certaines entités ont beaucoup d'incidents négatifs mais peu de positifs ( OAuthApplication, Process, CloudApplication) ce qui indique que ces entités sont moins susceptibles d'être réellement compromises ou que les règles de détection sont mal calibrées pour elles.
+
+Ont peut donc
+prioriser la protection des entités User, Ip, etMachine car ce sont les cibles les plus fréquentes des attaques.
+Réduire les faux positifs sur certaines entités ( MailMessage, Ip) afin dajuster les règles de détection pour éviter les alertes inutiles.
+Analyser plus en détail les entités OAuthApplication, Process, et CloudApplication et vérifier si elles sont vraiment vulnérables ou si elles génèrent trop de fausses alertes.
 
 ```{r IncidentGrade-fill-selon-SuspicionLevel}
 
@@ -483,6 +494,14 @@ ggplot(df, aes(x = SuspicionLevel, fill = IncidentGrade)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation**
+La catégorie *Not Suspicious*représente l'écrasante majorité des incidents cela signifie que la plupart des alertes générées ne sont pas considérées comme suspectes.En gros le système de détection identifie beaucoup d'incidents mais les juge non suspects .
+
+*IncidentGrade* est positif(rouge) : On observe une proportion importante d'incidents positifs dans *Not Suspicious* ce qui signifie que les menaces réelles sont classées comme «non suspectes»
+
+*Suspicious* contient relativement peu d'incidents la plupart des incidents dans cette catégorie sont des incidents négatifs ( negatif) , ce qui signifie que le modèle considère rarement des événements comme véritablement suspects. Cela peut indiquer que les seuils de suspicion sont trop stricts et n'identifient pas assez d'attaques.
+
+Il faut donc analyser les vrais incidents ( positif) dans *Not Suspicious* pour voir s'il ya des modèles d'attaques cachées.
+Comparer avec d'autres variables ( MitreTechniques, EntityType) pour identifier les entités les plus touchées dans chaque catégorie.
 
 
 
@@ -500,9 +519,14 @@ ggplot(df, aes(x = Usage, fill = IncidentGrade)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 **interpretation**
+Les entités *Public* génèrent un nombre d'incidents nettement plus élevé que les entités Private.
+Cela signifie que les ressources publiques (ex. serveurs accessibles sur Internet, services cloud publics) sont beaucoup plus ciblées par des activités suspectes ou malveillantes.
 
+*IncidentGrade* est positif(rouge):Le nombre d'incidents *positifs* est plus élevé dans *Public* que dans *Private*.Cela signifie que les attaques réussies sont plus fréquentes sur des ressources publiques car elle sont plus exposés et vulnérables.
 
+*IncidentGrade* est négatif(bleu) :Les entités *Public* génèrent également un nombre élevé d'incidents négatifs, ce qui signifie que beaucoup d'alertes sont non confirmées. Dans *Private*, la proportion d'incidents positifs et négatifs semble plus équilibrée.
 
+Il faut donc analyser les incidents positifs en Public pour identifier les vecteurs d'attaque principaux et evaluer les écarts entre Public et Private afin de voir pourquoi les ressources privées ont-elles moins d'incidents confirmés.
 
 ```{r IncidentGrade-evolution-dans-le-temps}
 
