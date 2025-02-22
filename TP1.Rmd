@@ -47,11 +47,9 @@ Donc nous allons préter une attention particulière à la colinéarité entre l
 
 
 
-#```{r importation-du-dataset,include = FALSE}
-#df<- read.csv("./data/GUIDE_Train.csv")
-#head(df)
-#View(df)
-#```
+```{r importation-du-dataset,include = FALSE}
+Database<- read.csv("../data/GUIDE_Train.csv")
+```
 
 
 
@@ -64,7 +62,7 @@ Donc nous allons préter une attention particulière à la colinéarité entre l
 
 
 
-```{r importation-du-dataset, include=FALSE}
+```{r importation-du-sous-dataset, include=FALSE}
 df<- read.csv("data_subset.csv")
 df[df == ""] <- NA  
 df[df == " "] <- NA 
@@ -231,13 +229,6 @@ Nous constatons qu'il ya beaucoup de colonnes qui doivent être supprimées par 
 Ce sont des Id --> Elles sont facilement identifiablesde façon unique et donc,
 non performants pour les algorithmes d'apprentissage machine ;
 
-```{r ensemble-train-test,include=FALSE}
-set.seed(165)
-split <- initial_split(df, prop = 0.8)
-df_train <- training(split)
-df_test <- testing(split)
-
-```
 
 #####  **Supression des colonnes non pertinentes pour l'étude** 
 
@@ -247,7 +238,7 @@ col_a_supprimer = c("Id", "OrgId" ,"IncidentId","AlertId","DetectorId" ,
                     "NetworkMessageId","EmailClusterId","ApplicationId",
                     "OAuthApplicationId","ResourceIdName")
 for (colonne in col_a_supprimer){
-  df_train[[colonne]] <- NULL
+  df[[colonne]] <- NULL
 }
 ```
 Bien qu'elle identifient la données,
@@ -261,8 +252,8 @@ la fraude.
 * On conserve "FileName" et "Sha256" pour tenir compte des fichiers malveillants récurrents.
 
 ```{r valeurs-manquantes}
-valeurs_manquantes <- colSums(is.na(df_train))
-pourcentage_nan <- (valeurs_manquantes / nrow(df_train)) * 100
+valeurs_manquantes <- colSums(is.na(df))
+pourcentage_nan <- (valeurs_manquantes / nrow(df)) * 100
 valeurs_manquantes <- data.frame(
   Column = names(valeurs_manquantes),
   Missing_Values = valeurs_manquantes,
@@ -276,7 +267,7 @@ print(valeurs_manquantes)
 "ThreatFamily","AntispamDirection", "Roles"
 
 ```{r suspicionLevel, include=FALSE}
-df_train %>%
+df %>%
   count(SuspicionLevel, sort = TRUE)
 ```
 
@@ -286,7 +277,7 @@ non évaluée.
 
 
 ```{r LastVerdict, include= FALSE}
-df_train %>%
+df %>%
   count(LastVerdict, sort = TRUE)
 ```
 La valeur manquante signifie qu'il n'y a pas encore de verdict, ou que le verdict est inconnu
@@ -294,7 +285,7 @@ La valeur manquante signifie qu'il n'y a pas encore de verdict, ou que le verdic
 
 
 ```{r MitreTechniques, include=FALSE}
-df_train %>%
+df %>%
   count(MitreTechniques, sort = TRUE)
 ```
 
@@ -306,18 +297,18 @@ On va remplacer les valeurs manquantes par "Unknown"
 col_a_supprimer = c("ActionGrouped","ActionGranular","ResourceType","ThreatFamily",
              "AntispamDirection", "Roles")
 for (col in  col_a_supprimer){
-  df_train[[col]] <- NULL
+  df[[col]] <- NULL
 }
 
-df_train$SuspicionLevel[is.na(df_train$SuspicionLevel)] <- "Not Suspicious"
-df_train$LastVerdict[is.na(df_train$LastVerdict)] <- "Pending Analysis"
-df_train$MitreTechniques[is.na(df_train$MitreTechniques)] <- "Unknown"
+df$SuspicionLevel[is.na(df$SuspicionLevel)] <- "Not Suspicious"
+df$LastVerdict[is.na(df$LastVerdict)] <- "Pending Analysis"
+df$MitreTechniques[is.na(df$MitreTechniques)] <- "Unknown"
 ```
 
 
 
 ```{r statistiques}
-skim(df_train) %>%
+skim(df) %>%
   kable()
 ```
 
@@ -325,10 +316,10 @@ Plusieurs colonnes ne sont pas dans le bon type, on va les transformer.
 Notons déjà que toutes les colonnes numériques devraient etre categorielles
 
 ```{r changement-type-colonnes, include= FALSE}
-df_train$Timestamp <- as.Date(df_train$Timestamp, format = "%Y-%m-%d")
+df$Timestamp <- as.Date(df$Timestamp, format = "%Y-%m-%d")
 
 
-df_train <- df_train %>%
+df <- df %>%
   mutate(across(where(is.numeric), as.factor),
          across(where(is.character), as.factor))
 ```
@@ -337,7 +328,7 @@ df_train <- df_train %>%
 
 ```{r visualisation-mitre-technique}
 
-technique_counts <- df_train %>%
+technique_counts <- df %>%
   group_by(MitreTechniques) %>%
   summarise(Count = n())
 
@@ -362,7 +353,7 @@ Les techniques T1078, T1566, et T1133 sont les plus courantes après "Unknown", 
 Certaines attaques combinent plusieurs techniques , ce qui signifie qu'un modèle de détection efficace doit prendre en compte les relations entre ces différentes méthodes .
 
 ```{r incident-Grade-visualisation}
-IncidentGrade_count <- df_train %>%
+IncidentGrade_count <- df %>%
   group_by(IncidentGrade) %>%
   summarise(Count = n()) 
 
@@ -375,14 +366,14 @@ ggplot(data = IncidentGrade_count,
     y = " "
   ) +
   theme_minimal()
-# view(df_train)
+# view(df)
 ```
 **Interpretation** :  Le nombre élevé de BenignPositive et FalsePositive indique que le système génère beaucoup d'alertes inutiles (bruit).Ce qui est contre productif.
 Une première recommandation est déjà d'e rafinner d'améliorer le système d'alerte pour qu'il capte moin de bruit.
 
 
 ```{r repartition-categories}
-category_counts <- df_train %>%
+category_counts <- df %>%
   count(Category, name = "Count") %>%  
   arrange(desc(Count))  
 
@@ -411,12 +402,12 @@ ggplot(top_5_categories, aes(x = "", y = Count, fill = fct_reorder(Category, -Co
 
 *SuspiciousActivity* Comportements suspects qui ne sont pas nécessairement confirmés comme des attaques.
 *CommandAndControl* Signale qu'un attaquant tente d'établir une communication avec un serveur distant.
-*Impac*t est la catégorie la moins fréquente cela signifie que les incidents ayant un effet direct et destructeur sont moins courants du à une bonne capacité de détection précoce.
+*Impact* est la catégorie la moins fréquente cela signifie que les incidents ayant un effet direct et destructeur sont moins courants du à une bonne capacité de détection précoce.
 
 *Autres* cette catégorie regroupe toutes les autres catégories moins fréquentes.
 
 ```{r IncidentGrade-fill-selon-IncidentGrade}
-incident_counts <- df_train %>%
+incident_counts <- df %>%
   count(IncidentGrade, name = "Count")
 
 ggplot(incident_counts, aes(x = "", y = Count, fill = IncidentGrade)) +
@@ -450,16 +441,7 @@ TruePositive --> positif
 ```{r modification-IncidentGrade}
 library(dplyr)
 
-df_train <- df_train %>%
-  mutate(
-    IncidentGrade = case_when(
-      IncidentGrade == "BenignPositive" ~ "negatif",
-      IncidentGrade == "FalsePositive" ~ "negatif",
-      IncidentGrade == "TruePositive" ~ "positif"
-    )
-  )
-
-df_test <- df_test %>%
+df <- df %>%
   mutate(
     IncidentGrade = case_when(
       IncidentGrade == "BenignPositive" ~ "negatif",
@@ -472,7 +454,7 @@ df_test <- df_test %>%
 
 
 ```{r IncidentGrade-fill-selon-EntityType}
-ggplot(df_train, aes(x = EntityType, fill = IncidentGrade)) +
+ggplot(df, aes(x = EntityType, fill = IncidentGrade)) +
   geom_bar() +
   labs(
     title = "Nombre d'incidents par EntityType et IncidentGrade",
@@ -489,7 +471,7 @@ ggplot(df_train, aes(x = EntityType, fill = IncidentGrade)) +
 
 ```{r IncidentGrade-fill-selon-SuspicionLevel}
 
-ggplot(df_train, aes(x = SuspicionLevel, fill = IncidentGrade)) +
+ggplot(df, aes(x = SuspicionLevel, fill = IncidentGrade)) +
   geom_bar() +
   labs(
     title = " IncidentGrade par niveau de suspicion",
@@ -506,7 +488,7 @@ ggplot(df_train, aes(x = SuspicionLevel, fill = IncidentGrade)) +
 
 ```{r IncidentGrade-fill-selon-Usage}
 
-ggplot(df_train, aes(x = Usage, fill = IncidentGrade)) +
+ggplot(df, aes(x = Usage, fill = IncidentGrade)) +
   geom_bar() +
   labs(
     title = " IncidentGrade par Usage",
@@ -524,7 +506,7 @@ ggplot(df_train, aes(x = Usage, fill = IncidentGrade)) +
 
 ```{r IncidentGrade-evolution-dans-le-temps}
 
-incident_grade_monthly <- df_train %>%
+incident_grade_monthly <- df %>%
   mutate(Month = floor_date(Timestamp, "month")) %>%
   group_by(Month, IncidentGrade) %>%
   summarise(Count = n(), .groups = 'drop')
@@ -558,7 +540,7 @@ Faisons un zoom sur les fluxtuations pendant le mois de mai
 start_date <- as.Date("2024-05-01")
 end_date <- as.Date("2024-08-30")
 
-filtered_data <- df_train %>%
+filtered_data <- df %>%
   filter(Timestamp >= start_date & Timestamp <= end_date)
 
 daily_counts <- filtered_data %>%
@@ -587,47 +569,177 @@ La ligne rouge indique la moyenne du nombre d'incidents sur la période .
 
 Analysons les incidents entre le 1er et le 6 juin afin d'dentifier la cause du pic, vérifiions l'impact des contre-mesures après le 13 juin  Ont-elles été efficaces ?
 
+
+
 ### 3. Regression logistique
 
-```{r choix-des-predicteurs}
+```{r binarisation-variable-cible, include=FALSE}
+df$IncidentGrade <- ifelse(df$IncidentGrade == "positif", 1, 0)
+```
+
+Avant de commencer, on va scinder notre jeu de donnée en un ensemble d'e test'entrainement et un ensemble de test.
+
+
+
+```{r ensemble-train-test,include=FALSE}
+set.seed(165)
+split <- initial_split(df, prop = 0.8)
+df_train <- training(split)
+df_test <- testing(split)
+```
+
+On va desormais travailler uniquement sur l'ensemble d'entrainement.
+
+
+
+```{r selection-predicteurs-significatifs}
+df_ <- df_train #Je n'ai pas envie de modifier df_train pour l'instant
+df_[] <- lapply(df_train, function(x) if(is.factor(x)) as.integer(x) else x)
+#head(df_)
 
 df_predicteurs <- list()
-df_predicteurs <- list()
-df_train$IncidentGrade <- ifelse(df_train$IncidentGrade == "positif", 1, 0)
-df_train_ <- df_train
-df_train_[] <- lapply(df_train, function(x) if(is.factor(x)) as.integer(x) else x)
-head(df_train_)
-
-for(colonne in colnames(df_train_)[colnames(df_train_) != "IncidentGrade"]){
-  model <- glm(IncidentGrade ~ get(colonne), data = df_train_, family = binomial)
+for(colonne in colnames(df_)[colnames(df_) != "IncidentGrade"]){
+  model <- glm(IncidentGrade ~ get(colonne), data = df_, family = binomial)
   model_summary <- summary(model)
   p_value <- model_summary$coefficients[, 4]
-  if ((p_value[2] > 0.00001 & p_value[2] < 0.05)){
+  if ((p_value[2] > 0.0001 & p_value[2] < 0.05)){
+# p=0 --> la corresprondance est parfaite donc les variables sont colineaires
+#p>0.05 --> la variable n'est pas significative, donc on peut l'enlever
     cat('p-value pour', colonne, '= ', p_value[2], "\n")
     df_predicteurs = c(df_predicteurs, colonne)
   }
 }
-df_predicteurs <- unlist(df_predicteurs)
-df_train_prepare <- df_train_[, df_predicteurs]
-df_train_prepare$IncidentGrade = df_train$IncidentGrade
 
-model <- glm(IncidentGrade ~., data = df_train_prepare , family = binomial)
-summary(model)
+df_predicteurs <- unlist(df_predicteurs)
+df_prepare <- df_[, df_predicteurs]
+df_prepare$IncidentGrade = df_train$IncidentGrade
+#a ce niveau, les donnees sont bien preparees, on peut travailler avec
+df_train = df_prepare
 
 ```
+
+```{r recherche-du-meilleur-modele, include=FALSE}
+model <- glm(IncidentGrade ~ ., data = df_train , family = binomial)
+summary(model)
+#"On retire RegistryValueName
+
+model <- glm(IncidentGrade ~ Timestamp+  RegistryKey +
+               RegistryValueData + Usage , 
+             data = df_train , family = binomial)
+summary(model)
+
+#   On retire RegistryValueData
+
+model <- glm(IncidentGrade ~ Timestamp +RegistryKey + Usage , 
+             data = df_train , family = binomial)
+summary(model)
+
+#Le résultat est satisfaisant, toutes les variables sont significatives
+
+```
+
+
 
 Interpretation : Seules les variables Timestamp et Usage sont significatives
 
 ```{r regression-logistique-finale}
 
-model <- glm(IncidentGrade ~Timestamp+Usage, data = df_train_prepare , family = binomial)
-summary(model)
+glm.fits <- glm(IncidentGrade ~ Timestamp +RegistryKey + Usage , data = df_train , family = binomial)
+summary(glm.fits)
 
 ```
+
+
+
 * interpretation :
 
-* C'est donc le moment de calculer l'accurency et interpreter
 
+
+
+
+
+```{r precidion-du-modele}
+glm.fits <- glm(IncidentGrade ~ Timestamp + RegistryKey + Usage, 
+                data = df_train, 
+                family = binomial)
+summary(glm.fits)
+glm.props <- predict(glm.fits, df_train, type =  "response")
+glm.pred <- ifelse(glm.props > 0.4, "Frauduleux", "Non Frauduleux")
+IncidentGrade_train <- ifelse(df_train$IncidentGrade == 1, "Frauduleux", "Non Frauduleux")
+table(glm.pred,IncidentGrade_train)
+precision <- mean(glm.pred == IncidentGrade_train)
+cat("La précision du modèle est : ", round(precision, 2))
+
+```
+
+
+La precision est  de 64 %  --> , Le modèle que nous venons de construire
+est utile. nous allons maintenant le tester sur les données de test.
+
+
+```{r tester-le-modele}
+
+df_test$RegistryKey = as.integer(df_test$RegistryKey) 
+df_test$Usage = as.integer(df_test$Usage) 
+
+glm.props_test <- predict(glm.fits, df_test, type =  "response")
+glm.pred_test <- ifelse(glm.props_test > 0.4, "Frauduleux", "Non Frauduleux")
+
+IncidentGrade_test <- ifelse(df_test$IncidentGrade == 1, "Frauduleux", "Non Frauduleux")
+table(glm.pred_test, IncidentGrade_test)
+precision_test <- mean(glm.pred_test == IncidentGrade_test)
+cat("\n Précision du modèle sur les données de test : ", round(precision_test, 2))
+
+```
+
+* Interpretation : le modèle a la même précision de 64% pour les données de test : 
+
+C'est un bon modèle, il peut être déployé
+
+
+## Modèle Batit sur la vrai base de données au complet.
+
+```{r deploiement-du-modele}
+# On selectionne les colonnes utiles
+
+df <- Database[, c("Timestamp", "RegistryKey", "Usage", "IncidentGrade")]
+#On prepare les données sous la base de tout ce qui est dejà connu plus haut
+df$Timestamp <- as.Date(df$Timestamp, format = "%Y-%m-%d")
+
+df$RegistryKey = as.factor(df$RegistryKey)
+df$IncidentGrade = as.factor(df$IncidentGrade) 
+df$Usage = as.factor(df$Usage) 
+
+df <- df %>%
+  mutate(
+    IncidentGrade = case_when(
+      IncidentGrade == "BenignPositive" ~ "negatif",
+      IncidentGrade == "FalsePositive" ~ "negatif",
+      IncidentGrade == "TruePositive" ~ "positif"
+    )
+  )
+df$IncidentGrade <- ifelse(df$IncidentGrade == "positif", 1, 0)
+
+
+
+# La suite du code ne compile pas.
+
+#message d'erreur : Notre ordinateur n'a pas assez de memoire pour allouer 30.8 GO
+
+# On effectue maintenant le test
+
+#glm.fits <- glm(IncidentGrade ~ Timestamp + RegistryKey + Usage, 
+          #      data = df, 
+           #     family = binomial)
+#summary(glm.fits)
+#glm.props <- predict(glm.fits, df, type =  "response")
+#glm.pred <- ifelse(glm.props > 0.4, "Frauduleux", "Non Frauduleux")
+#IncidentGrade <- ifelse(df$IncidentGrade == 1, "Frauduleux", "Non Frauduleux")
+#table(glm.pred,IncidentGrade)
+#precision <- mean(glm.pred == IncidentGrade)
+#cat("La précision du modèle est : ", round(precision, 2))
+
+```
 
 
 
