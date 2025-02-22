@@ -54,9 +54,13 @@ Database<- read.csv("../data/GUIDE_Train.csv")
 
 
 #```{r ecriture-du-dataset-de-travail, include = FALSE}
+
 #set.seed(123)  
+
 #df_subset <- df %>%
+
 #sample_n(25000)
+
 #write_csv(df_subset, "data_subset.csv")
 #```
 
@@ -95,10 +99,25 @@ head(df)
     2.2 
     
     
-3. Regression logistique
+3. Regression logistique sur la BD échantillonnée alléatoirement.
+
+   3.1 Separation de la BD en (80,20) = (entrainement,test)
+   
+   3.2. Construction du modèle : Approche **Backward**
+
+
+4. Déploiement du modèle sur la BD originale.
+
+     4.1 Préparation des données
+     
+     4.2 Regression
+     
+5. Quelques recommandations : 
+     
 
     
 ### 1. A propos des donnees
+
 ####  1.1 À propos de l'auteur ;
 
 Cette base de données est accessible en libre téléchargement via kagle(https://www.kaggle.com/datasets/Microsoft/microsoft-security-incident-prediction?select=GUIDE_Train.csv).
@@ -219,10 +238,10 @@ cette base englobe plus de 13 millions d'éléments de preuve sur 33 types d'ent
 
 Les variables sont réparties en 31 numériques et 15 catégorielles.
 
-Mais, en réalité,les variables numérique sont en fait des id et des codes, Donc ce sont des facteurs à 
-proprement parler.
+En réalité,les variables numérique sont en fait des id et des codes . ==> ce sont des variables catégorique à 
+proprement parler. On devra modifier le type dans les traitements.
 
-Ces variables vont être utilisées pour prédire les anomalies et détecter des attaques
+
 
 
 Nous constatons qu'il ya beaucoup de colonnes qui doivent être supprimées par ce que
@@ -241,7 +260,7 @@ for (colonne in col_a_supprimer){
   df[[colonne]] <- NULL
 }
 ```
-Bien qu'elle identifient la données,
+Bien qu'elles sont des  identifiant des données,
 
 * Les variables "AccountUpn" et "AccountName" sont conservées par ce que, bien qu'étant des failles 
 d'identification, elles rapportent des analyses sur les comptes utilisateurs,ce qui pourrait permettre de comprendre
@@ -259,20 +278,20 @@ valeurs_manquantes <- data.frame(
   Missing_Values = valeurs_manquantes,
   Pourcentage_NaN = pourcentage_nan
 ) %>%
-  filter(Pourcentage_NaN > 0) %>%
+  filter(Pourcentage_NaN != 0) %>%
   arrange(desc(Pourcentage_NaN))
 print(valeurs_manquantes)
 ```
 * On va supprimer les colonnes "ActionGrouped", "ActionGranular", "ResourceType",
 "ThreatFamily","AntispamDirection", "Roles"
 
-```{r suspicionLevel, include=FALSE}
+```{r suspicionLevel, include =FALSE}
 df %>%
   count(SuspicionLevel, sort = TRUE)
 ```
 
 
-Dans cette colonne, la valeur manquante  signifie que la transaction est non suspecte ou
+Dans la  colonne *'SuspicionLevel'* , la valeur manquante  signifie que la transaction est non suspecte ou
 non évaluée. 
 
 
@@ -280,7 +299,7 @@ non évaluée.
 df %>%
   count(LastVerdict, sort = TRUE)
 ```
-La valeur manquante signifie qu'il n'y a pas encore de verdict, ou que le verdict est inconnu
+La valeur manquante  dans la colone *'LastVerdict'* signifie qu'il n'y a pas encore de verdict, ou que le verdict est inconnu
 
 
 
@@ -289,7 +308,7 @@ df %>%
   count(MitreTechniques, sort = TRUE)
 ```
 
-On va remplacer les valeurs manquantes par "Unknown"
+Dans la colonne *'MitreTechniques'* On va remplacer les valeurs manquantes par "Unknown"
 
 
 
@@ -345,8 +364,10 @@ ggplot(data = head(techniques_ordone, 10),
   ) +
   theme_minimal() 
 ```
+
 **interprétation** : 
-La majorité des alertes sont associées à «Unknown» , ce qui pourrait être un problème de qualité des données.
+
+La majorité des alertes sont associées à «Unknown» , ce qui signifie qu'on n'est pas capable de répérer la source et les méthodes de plusiers attaques. On devrait renforcer davantage la cibersécurité et former les employés, ou recruter des spécialistes.
 
 Les techniques T1078, T1566, et T1133 sont les plus courantes après "Unknown", ce qui suggère que ces méthodes sont des vecteurs d'attaque privilégiés.
 
@@ -366,10 +387,11 @@ ggplot(data = IncidentGrade_count,
     y = " "
   ) +
   theme_minimal()
-# view(df)
+
 ```
+
 **Interpretation** :  Le nombre élevé de BenignPositive et FalsePositive indique que le système génère beaucoup d'alertes inutiles (bruit).Ce qui est contre productif.
-Une première recommandation est déjà d'e rafinner d'améliorer le système d'alerte pour qu'il capte moin de bruit.
+Une première recommandation est déjà de  rafinner et  d'améliorer le système d'alerte pour qu'il capte moin de bruit.
 
 
 ```{r repartition-categories}
@@ -395,7 +417,9 @@ ggplot(top_5_categories, aes(x = "", y = Count, fill = fct_reorder(Category, -Co
 
 ```
 
-**interpretation** 
+
+**interpretation** :
+
 *Initial Access*est la catégorie la plus fréquente Cela signifie que la majorité des alertes concernent des tentatives d'accès initiales (ex. hameçonnage, exploitation de vulnérabilités).
 
 *Exfiltration*arrive en deuxième position Cela correspond aux tentatives de vol de données en dehors du réseau cible ce qui indique aussi que des attaquants ont réussi à pénétrer les systèmes et tenter d'exfiltrer des informations sensibles.
@@ -429,8 +453,8 @@ Une proportion élevée de TruePositiveest un bon signe car cela signifie que la
 
 *FalsePositive* (Moins fréquents) ce sont des alertes générées à tort. Une proportion trop élevée de FalsePositive peut poser problème , car cela signifie que l'algorithme génère trop d'alertes inutiles , ce qui peut surcharger les analystes et réduire la confiance dans le système.
 
-Puisque nous voulons faire une regression logistique pour prédire la variable 'IncidentGrade', nous allons
-modifier cette dernière pour obtenir juste deux classes de la façon suivante :
+**Puisque nous voulons faire une regression logistique pour prédire la variable 'IncidentGrade', nous allons
+modifier cette dernière pour obtenir juste deux classes de la façon suivante :**
 
 BenignPositive --> negatif
 
@@ -438,7 +462,7 @@ FalsePositive --> negatif
 
 TruePositive --> positif
 
-```{r modification-IncidentGrade}
+```{r modification-IncidentGrade, include=FALSE}
 library(dplyr)
 
 df <- df %>%
@@ -457,16 +481,19 @@ df <- df %>%
 ggplot(df, aes(x = EntityType, fill = IncidentGrade)) +
   geom_bar() +
   labs(
-    title = "Nombre d'incidents par EntityType et IncidentGrade",
-    x = "Type d'entité",
-    y = "Nombre d'incidents"
+    title = "Nombre d'incidents par type d'entité selon  IncidentGrade",
+    x = " ",
+    y = " "
   ) +
   theme_minimal() +
   scale_fill_manual(values = c("negatif" ="skyblue" , "positif" ="indianred" ))  + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   coord_flip()
+
 ```
+
 **interpretation**
+
 Les entités les plus affectées sont Ip, Machine, User, etMailMessage,ces entités sont les plus exposées aux incidents de sécurité et nécessairement une surveillance renforcée.
 
 *IncidentGrade* est positif(rouge) ce qui confirme Incidents, User, Ip, et Machine présente un nombre élevé d'incidents positifs ce qui signifie que ces entités sont fréquemment compromises ou impliquées dans des attaques avérées.
@@ -492,9 +519,14 @@ ggplot(df, aes(x = SuspicionLevel, fill = IncidentGrade)) +
   theme_minimal() +
   scale_fill_manual(values = c("negatif" ="skyblue" , "positif" ="indianred"))  +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ```
+
 **interpretation**
-La catégorie *Not Suspicious*représente l'écrasante majorité des incidents cela signifie que la plupart des alertes générées ne sont pas considérées comme suspectes.En gros le système de détection identifie beaucoup d'incidents mais les juge non suspects .
+
+La catégorie *Not Suspicious* représente l'écrasante majorité des incidents cela signifie que la plupart des alertes générées ne sont pas considérées comme suspectes. En gros le système de détection identifie beaucoup d'incidents mais les juge non suspects .
+
+La catégorie *"Incriminated"* n'a pas de données visibles dans le graphique, ce qui suggère soit une absence de cas, soit un nombre très faible.
 
 *IncidentGrade* est positif(rouge) : On observe une proportion importante d'incidents positifs dans *Not Suspicious* ce qui signifie que les menaces réelles sont classées comme «non suspectes»
 
@@ -517,8 +549,11 @@ ggplot(df, aes(x = Usage, fill = IncidentGrade)) +
   theme_minimal() +
   scale_fill_manual(values = c("negatif" ="skyblue" , "positif" ="indianred" ))  +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ```
+
 **interpretation**
+
 Les entités *Public* génèrent un nombre d'incidents nettement plus élevé que les entités Private.
 Cela signifie que les ressources publiques (ex. serveurs accessibles sur Internet, services cloud publics) sont beaucoup plus ciblées par des activités suspectes ou malveillantes.
 
@@ -548,16 +583,16 @@ ggplot(incident_grade_monthly, aes(x = Month, y = Count, color = IncidentGrade))
   theme_minimal() +
   scale_color_manual(values = c("negatif" = "skyblue", "positif" = "red")) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ```
-**interpretation** On remarque que les déclarations d'incidents sont stables durant l'hivers.
+
+**interpretation** : On remarque que les déclarations d'incidents sont stables durant l'hivers.
 et le système ne capture que les transactions frauduleuse.
 
 C'est en mai et Juin que se dégagent la majorité des signalements. Possible lien avec 
 tous les mouvements qui se déroulent durant l'été ? c'est une question qu'il faudra explorer.
 
 Faisons un zoom sur les fluxtuations pendant le mois de mai
-
-
 
 
 ```{r incidents-mai}
@@ -587,32 +622,38 @@ ggplot(daily_counts, aes(x = Date, y = Count)) +
 
 ```
 
-**Interprétation**
+**Interprétation** : 
+
 On observe une augmentation brutale autour du 1er juin , où le nombre d'incidents passe de moins de 500 à plus de 1500 en quelques jours du a des activité malveillante.Après le pic début juin, le nombre d'incidents commence à redescendre , avec une apparition notable entre le 6 et le 13 juin.Une tendance clairement baissière après le 13 juin ce qui es du surement a une réponse efficace des équipes de cybersécurité ou une résolution des problèmes détectés début juin.
 La ligne rouge indique la moyenne du nombre d'incidents sur la période .
 
 Analysons les incidents entre le 1er et le 6 juin afin d'dentifier la cause du pic, vérifiions l'impact des contre-mesures après le 13 juin  Ont-elles été efficaces ?
 
-
+**Un approche serait de limiter notre étude aux incidents se produisant entre le 16 mai et le 13 juin,
+pour capter le flux de variation et optimiser le  modèle. Mais nous n'allons pas le faire dans le cadre de ce travail.**
 
 ### 3. Regression logistique
 
 ```{r binarisation-variable-cible, include=FALSE}
 df$IncidentGrade <- ifelse(df$IncidentGrade == "positif", 1, 0)
+
 ```
 
-Avant de commencer, on va scinder notre jeu de donnée en un ensemble de test'entrainement et un ensemble de test.
+Avant de commencer, on va scinder notre jeu de donnée en un ensemble d'entrainement et un ensemble de test.
 
 
 
-```{r ensemble-train-test,include=FALSE}
+```{r ensemble-train-test}
 set.seed(165)
 split <- initial_split(df, prop = 0.8)
 df_train <- training(split)
 df_test <- testing(split)
+
 ```
 
-On va desormais travailler uniquement sur l'ensemble d'entrainement.
+On va desormais travailler uniquement sur l'ensemble d'entrainement pour batir le modèle.
+
+Pour ce faire, nous avons utilisé l'approche **Backward**.
 
 
 
@@ -658,29 +699,46 @@ model <- glm(IncidentGrade ~ Timestamp +RegistryKey + Usage ,
              data = df_train , family = binomial)
 summary(model)
 
-#Le résultat est satisfaisant, toutes les variables sont significatives
+#Le résultat est satisfaisant, ces trois variables sont significatives
 
 ```
 
 
 
-Interpretation : Seules les variables Timestamp et Usage sont significatives
 
-```{r regression-logistique-finale}
+```{r regression-logistique}
 
-glm.fits <- glm(IncidentGrade ~ Timestamp +RegistryKey + Usage , data = df_train , family = binomial)
+glm.fits <- glm(IncidentGrade ~ Timestamp + RegistryKey + Usage , data = df_train , family = binomial)
 summary(glm.fits)
 
 ```
 
 
 
-**interpretation**: Les variables Timestamp, RegistryKey et Usage sont statistiquement significatives. Pour les variables Timestamp et Usage , on a des coefficients négatifs (-0.0069) et (-0.07),ce qui diminue la probabilité d'être TruePositive.
-Pour la variable RegistryKey avec un coefficient positif ( 0.30),la probabilité d'être TruePositive augmente.
+**interpretation**: 
 
-Si l'incident inclut une clé enregistré impliquée (RegistryKey) , la probabilité d'être TruePositive augmente autrement dit que l'incident soit véridique.
+Les variables Timestamp, RegistryKey et Usage sont statistiquement significatives.
+
+* Intercept (131.201) --> lorsqu'aucune des variables explicatives n'est prise en compte, IncidentGrade a une forte tendance à être considéré comme frauduleux .
+
+* Timestamp = -0.006913 (p = 0.006) --> à mesure que le temps passe, les incident ont moins tendance à être catégorisés 
+comme suspectes. Cet effet est statistiquement significatif.
+
+* RegistryKey = 0.304977 (p = 0.027) --> certaines valeurs de RegistryKey augmentent les chances d’un incident frauduleux par rapport à une catégorie de référence. 
+
+Une Piste est de regarder individuellement toutes les clés qui N'ont été utiliséee qu'une seule fois.
+
+```{r registryKey}
+Registry_counts <- df %>%
+  count(RegistryKey, name = "Count") %>%
+  arrange(desc(Count))
+t(Registry_counts)%>%
+  kable()
+ 
+```
 
 
+* Usage (-0.071423) : Cela pourrait signifier que plus une ressource (Usage) est utilisée, moins elle est associée à un incident de type frauduleux.  
 
 
 
@@ -723,13 +781,15 @@ cat("\n Précision du modèle sur les données de test : ", round(precision_test
 C'est un bon modèle, il peut être déployé
 
 
-## Modèle Batit sur la vrai base de données au complet.
+## 4 Modèle Batit sur la vrai base de données au complet.
 
 ```{r deploiement-du-modele}
 # On selectionne les colonnes utiles
-# J'ai mis en commentaire cette partie, elle ne s'execute pas chez moi 
-#df <- Database[, c("Timestamp", "RegistryKey", "Usage", "IncidentGrade")]
+ 
+df <- Database[, c("Timestamp", "RegistryKey", "Usage", "IncidentGrade")]
 #On prepare les données sous la base de tout ce qui est dejà connu plus haut
+
+
 df$Timestamp <- as.Date(df$Timestamp, format = "%Y-%m-%d")
 
 df$RegistryKey = as.factor(df$RegistryKey)
@@ -748,7 +808,7 @@ df$IncidentGrade <- ifelse(df$IncidentGrade == "positif", 1, 0)
 
 
 
-# La suite du code ne compile pas.
+# La suite du code ne compile pas il nous faudrait un super calculateur.
 
 #message d'erreur : Notre ordinateur n'a pas assez de memoire pour allouer 30.8 GO
 
@@ -768,4 +828,31 @@ df$IncidentGrade <- ifelse(df$IncidentGrade == "positif", 1, 0)
 ```
 
 
+## Quelques recommandations  : 
 
+1. Engager d'avantages des spécialistes en cibersécurité et former le personnel ;
+
+2. Mettre sur pied des publicités de sensibilisation ; 
+
+3. Mettre une surveillance accrue sur les ressources moins utilisées ;
+
+4. Renforcer la surveillance et les mesures de sécurité en été ; 
+
+5. Regarder particulièrement les opérations qui se sont effectuées avec les clés suivantes, dans l'ordre de priorité
+descandante.
+
+```{r operations-suspectes}
+Registry_counts <- Database %>%
+  count(RegistryKey, name = "Count") %>%
+  filter(Count <= 2)%>%
+  arrange(Count)
+
+transactions_suspectes <- Database %>%
+  filter(RegistryKey %in% Registry_counts$RegistryKey)
+
+transactions_suspectes %>% 
+  select(RegistryKey,AlertTitle, Category,LastVerdict,Usage)%>%
+  head(25)%>%
+  kable()
+#La totalité sera fournies en fichier annexe nommé opérations suspectes
+```
