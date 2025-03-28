@@ -26,7 +26,7 @@ library(xgboost) # regressiom multinomiale performante
 library(ISLR2)
 ```
 
-```{r importation-des-fonctions, include=FALSE}
+```{r importation-des-fonctions, include=FALSE, eval=FALSE, echo=FALSE}
 source("plot_distribution.R")
 #file.exists("outliers.R")
 #file.exists("plot_distribution.R")
@@ -53,16 +53,16 @@ Database<- read.csv("../data/GUIDE_Train.csv")
 
 
 
-#```{r ecriture-du-dataset-de-travail, include = FALSE}
+```{r ecriture-du-dataset-de-travail, include = FALSE, eval=FALSE, echo=FALSE}
 
-#set.seed(123)  
+set.seed(123)  
 
-#df_subset <- df %>%
+df_subset <- df %>%
 
-#sample_n(25000)
+sample_n(25000)
 
-#write_csv(df_subset, "data_subset.csv")
-#```
+write_csv(df_subset, "data_subset.csv")
+```
 
 
 
@@ -408,12 +408,20 @@ autres_count <- sum(category_counts$Count) - sum(top_4_categories$Count)
 top_5_categories <- top_4_categories %>%
   add_row(Category = "Autres", Count = autres_count)
 
-ggplot(top_5_categories, aes(x = "", y = Count, fill = fct_reorder(Category, -Count))) +
-  geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) + 
-  labs(title = "Distribution des Catégories") +
-  theme_void() +
-  scale_fill_viridis_d() 
+#ggplot(top_5_categories, aes(x = "", y = Count, fill = fct_reorder(Category, -Count))) +
+  #geom_bar(stat = "identity", width = 1) +
+  #coord_polar(theta = "y", start = 0) + 
+  #labs(title = "Distribution des Catégories") +
+  #theme_void() +
+  #scale_fill_viridis_d() 
+
+ggplot(top_5_categories, aes(x = fct_reorder(Category, Count), y = Count, fill = Category)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Met les barres à l'horizontale
+  labs(title = "Distribution des Catégories", x = "Catégorie", y = "Nombre") +
+  theme_minimal() +
+  scale_fill_viridis_d()
+
 
 ```
 
@@ -434,12 +442,12 @@ ggplot(top_5_categories, aes(x = "", y = Count, fill = fct_reorder(Category, -Co
 incident_counts <- df %>%
   count(IncidentGrade, name = "Count")
 
-ggplot(incident_counts, aes(x = "", y = Count, fill = IncidentGrade)) +
-  geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y", start = 0) +
-  labs(title = "Répartition des IncidentGrade") +
-  theme_void() +
-  scale_fill_manual(values = c("FalsePositive" = "skyblue", "BenignPositive" = "gray", "TruePositive" = "indianred"))
+ggplot(incident_counts, aes(x = fct_reorder(IncidentGrade, Count), y = Count, fill = IncidentGrade)) +
+  geom_bar(stat = "identity") +
+  #coord_flip() +  # Met les barres à l'horizontale
+  labs(title = "Distribution des Catégories", x = "Catégorie", y = "Nombre") +
+  theme_minimal() +
+  scale_fill_viridis_d()
 
 ```
 
