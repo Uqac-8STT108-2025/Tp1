@@ -24,6 +24,8 @@ library(nnet)    # régression multinomiale
 library(onehot)
 library(xgboost) # regressiom multinomiale performante
 library(ISLR2)
+library(boot) # pour la validation croisée
+library(leaps) # pour la sélection des variables backward
 ```
 
 ```{r importation-des-fonctions, include=FALSE, eval=FALSE, echo=FALSE}
@@ -48,7 +50,8 @@ Donc nous allons préter une attention particulière à la colinéarité entre l
 
 
 ```{r importation-du-dataset,include = FALSE}
-Database<- read.csv("../data/GUIDE_Train.csv")
+#Database<- read.csv("../data/GUIDE_Train.csv")
+#df <- read.csv("../data/GUIDE_Train.csv")
 ```
 
 
@@ -58,10 +61,10 @@ Database<- read.csv("../data/GUIDE_Train.csv")
 set.seed(123)  
 
 df_subset <- df %>%
-
-sample_n(25000)
+  sample_n(25000)
 
 write_csv(df_subset, "data_subset.csv")
+
 ```
 
 
@@ -649,13 +652,115 @@ df$IncidentGrade <- ifelse(df$IncidentGrade == "positif", 1, 0)
 
 Avant de commencer, on va scinder notre jeu de donnée en un ensemble d'entrainement et un ensemble de test.
 
+```{r}
+# Chargement des packages nécessaires
+library(MASS)  # pour stepAIC
+library(dplyr)
+
+# On retire les colonnes inutiles, comme Timestamp
+df_mod <- df %>%
+  dplyr::select(-Timestamp)  # retire Timestamp mais garde IncidentGrade comme cible
+
+# Transformer tous les facteurs en numériques (encodage simple si besoin)
+df_mod <- df_mod %>%
+  mutate(across(where(is.factor), ~ as.integer(as.factor(.))))
+
+# Modèle de départ : avec toutes les variables prédictives
+modele_depart <- lm(IncidentGrade ~ ., data = df_mod)
+
+# Modèle complet : modèle vide
+modele_complet <- lm(IncidentGrade ~ 1, data = df_mod)
+
+# Application de la sélection de variables en forward
+modele_forward <- stepAIC(
+  modele_depart, 
+  scope = list(lower = modele_depart, upper = modele_complet),
+  direction = "forward",
+  trace = TRUE  # Affiche les étapes
+)
+
+#Application de la sélection de variables en backward
+modele_backward <- stepAIC(
+  modele_depart, 
+  scope = list(lower = modele_depart, upper = modele_complet),
+  direction = "backward",
+  trace = TRUE  # Affiche les étapes
+)
+
+# Résumé du modèle final sélectionné
+#summary(modele_forward)
+
+summary(modele_backward)
+
+  
+```
+```{r}
+library(ggplot2)
+library(patchwork)
+# Extraire les coefficients du modèle sélectionné
+coefs <- summary(modele_forward)$coefficients
+
+# Convertir en data frame
+coefs_df <- as.data.frame(coefs)
+coefs_df$Variable <- rownames(coefs_df)
+
+# Enlever l'intercept pour le graph
+coefs_df <- coefs_df %>% filter(Variable != "(Intercept)")
+
+# Graphique des coefficients
+p1 <- ggplot(coefs_df, aes(x = reorder(Variable, Estimate), y = Estimate)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +  # pour que les variables soient lisibles
+  labs(
+    title = "Variables sélectionnées par Forward",
+    x = "Variables",
+    y = "Coefficient estimé"
+  ) +
+  theme_minimal()
+
+# Extraire les coefficients du modèle sélectionné
+coefs <- summary(modele_backward)$coefficients
+
+# Convertir en data frame
+coefs_df <- as.data.frame(coefs)
+coefs_df$Variable <- rownames(coefs_df)
+
+# Enlever l'intercept pour le graph
+coefs_df <- coefs_df %>% filter(Variable != "(Intercept)")
+#library(ggplot2)
+
+# Graphique des coefficients
+p2 <- ggplot(coefs_df, aes(x = reorder(Variable, Estimate), y = Estimate)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +  # pour que les variables soient lisibles
+  labs(
+    title = "Variables sélectionnées par backward",
+    x = "Variables",
+    y = "Coefficient estimé"
+  ) +
+  theme_minimal()
+
+p1|p2
+
+
+```
 
 
 ```{r ensemble-train-test}
-set.seed(165)
-split <- initial_split(df, prop = 0.8)
-df_train <- training(split)
-df_test <- testing(split)
+#Nous allons remplacer le training_set et le testing_set 80_20
+#par la validation croisée, pour ce faire nous devons d'abord définir les modeles
+#grâce au backward
+#1- selection des variables factiorielles
+
+#df_factor <- df[ , !(names(df) %in% c("Timestamp","IncidentGrade")]
+#for (col in colnames(df)){
+#  is.factor(col)
+#}
+  
+#set.seed(165)
+#split <- initial_split(df, prop = 0.8)
+#df_train <- training(split)
+#df_test <- testing(split)
 
 ```
 
@@ -663,51 +768,65 @@ On va desormais travailler uniquement sur l'ensemble d'entrainement pour batir l
 
 Pour ce faire, nous avons utilisé l'approche **Backward**.
 
+```{r approche-barckward-auto}
+#library(leaps)
+# On retire les colonnes inutiles, comme Timestamp
+df_mod <- df %>%
+  dplyr::select(-Timestamp)  # retire Timestamp mais garde IncidentGrade comme cible
 
+# Transformer tous les facteurs en numériques (encodage simple si besoin)
+df_mod <- df_mod %>%
+  mutate(across(where(is.factor), ~ as.integer(as.factor(.))))
+
+regfit.bwd <- regsubsets(IncidentGrade~.,data=df_mod, method='backward')
+summary_bwd <- summary(regfit.bwd)
+
+#summary_fwd$adjr2   # R² ajusté
+#summary_fwd$bic     # BIC
+#summary_fwd$cp      # Cp de Mallows
+#summary(regfit.bwd)
+which.min(summary(regfit.bwd)$adjr2)
+#summary_fwd$outmat  # Modèles sélectionnés (variables incluses)
+
+```
+```{r graphe-rss-adjr2-bic-cp}
+par(mfrow = c(2, 2))  # 2x2 graphiques
+plot(summary_bwd$rss, xlab = "Nombre de variables", ylab = "RSS", type = "l")
+plot(summary_bwd$adjr2, xlab = "Nombre de variables", ylab = "R² ajusté", type = "l")
+points(which.max(summary_bwd$adjr2), summary_bwd$adjr2[which.max(summary_bwd$adjr2)], col = "red", cex = 2, pch = 20)
+
+plot(summary_bwd$cp, xlab = "Nombre de variables", ylab = "Cp de Mallows", type = "l")
+points(which.min(summary_bwd$cp), summary_bwd$cp[which.min(summary_bwd$cp)], col = "red", cex = 2, pch = 20)
+
+plot(summary_bwd$bic, xlab = "Nombre de variables", ylab = "BIC", type = "l")
+points(which.min(summary_bwd$bic), summary_bwd$bic[which.min(summary_bwd$bic)], col = "red", cex = 2, pch = 20)
+
+```
+
+Nous avons choisi le critere BIC car nous avons un dataset volumineux et le BIC pénalise fortement ce qui est avantageux dans notre cas.
 
 ```{r selection-predicteurs-significatifs}
-df_ <- df_train #Je n'ai pas envie de modifier df_train pour l'instant
-df_[] <- lapply(df_train, function(x) if(is.factor(x)) as.integer(x) else x)
-#head(df_)
-
-df_predicteurs <- list()
-for(colonne in colnames(df_)[colnames(df_) != "IncidentGrade"]){
-  model <- glm(IncidentGrade ~ get(colonne), data = df_, family = binomial)
-  model_summary <- summary(model)
-  p_value <- model_summary$coefficients[, 4]
-  if ((p_value[2] > 0.0001 & p_value[2] < 0.05)){
-# p=0 --> la corresprondance est parfaite donc les variables sont colineaires
-#p>0.05 --> la variable n'est pas significative, donc on peut l'enlever
-    cat('p-value pour', colonne, '= ', p_value[2], "\n")
-    df_predicteurs = c(df_predicteurs, colonne)
-  }
-}
-
-df_predicteurs <- unlist(df_predicteurs)
-df_prepare <- df_[, df_predicteurs]
-df_prepare$IncidentGrade = df_train$IncidentGrade
-#a ce niveau, les donnees sont bien preparees, on peut travailler avec
-df_train = df_prepare
+# doit être remplacé par une méthode comme le forward ou le backward
+#which.min(summary_bwd$bic)
+coef(regfit.bwd, id = which.min(summary_bwd$bic))
+#coef(regfit.fwd, id = which.min(summary_fwd$adjr2))
+#coef(regfit.fwd, id = which.min(summary_fwd$cp))
 
 ```
 
 ```{r recherche-du-meilleur-modele, include=FALSE}
-model <- glm(IncidentGrade ~ ., data = df_train , family = binomial)
-summary(model)
-#"On retire RegistryValueName
+# Extraire les variables sélectionnées
+selected_vars <- names(coef(regfit.bwd, which.min(summary_bwd$bic)))[-1]  # Retirer l'intercept
 
-model <- glm(IncidentGrade ~ Timestamp+  RegistryKey +
-               RegistryValueData + Usage , 
-             data = df_train , family = binomial)
-summary(model)
+# Créer une formule de régression avec ces variables
+Variables <- as.formula(paste("IncidentGrade ~", paste(selected_vars, collapse = " + ")))
 
-#   On retire RegistryValueData
+# Ajuster le modèle final avec les variables sélectionnées
+final_model <- lm(formula, data = df_mod)
 
-model <- glm(IncidentGrade ~ Timestamp +RegistryKey + Usage , 
-             data = df_train , family = binomial)
-summary(model)
+# Résumé du modèle final
+summary(final_model)
 
-#Le résultat est satisfaisant, ces trois variables sont significatives
 
 ```
 
@@ -716,8 +835,18 @@ summary(model)
 
 ```{r regression-logistique}
 
-glm.fits <- glm(IncidentGrade ~ Timestamp + RegistryKey + Usage , data = df_train , family = binomial)
-summary(glm.fits)
+#glm.fits <- glm(IncidentGrade ~ Timestamp + RegistryKey + Usage , data = df_train , family = binomial)
+#summary(glm.fits)
+
+library(boot)
+
+
+glm.fits <- glm(Variables, data = df_mod, family = binomial)
+
+cv_result <- cv.glm(df_mod, glm.fits, K = 5)
+
+print(cv_result$delta)
+
 
 ```
 
@@ -750,7 +879,7 @@ t(Registry_counts)%>%
 
 
 
-```{r precidion-du-modele}
+```{r precision-du-modele}
 glm.fits <- glm(IncidentGrade ~ Timestamp + RegistryKey + Usage, 
                 data = df_train, 
                 family = binomial)
